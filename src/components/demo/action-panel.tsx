@@ -2,7 +2,6 @@
 
 import { CheckCircle2Icon, CheckIcon } from "lucide-react"
 import { useEffect, useId, useState } from "react"
-import { toast } from "sonner"
 
 import { QueueBar } from "@/components/diagrams/queue-bar"
 import { Button } from "@/components/ui/button"
@@ -192,7 +191,7 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
         },
         (hash) => actions.approve(symbol, hash)
       )
-      .then((r) => r.ok && toast.success(t(app.toasts.approved, { token: symbol })))
+
 
   const supply = () => {
     field.submit()
@@ -216,9 +215,6 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
         setDone({ amount: value })
         onPreview(null)
         field.clear()
-        toast.success(t(app.toasts.supplied, { amount: formatToken(value, symbol, locale) }), {
-          description: t(app.toasts.suppliedBody, { shares: `${formatAmount(shares, symbol, locale)} ${shareSymbol(symbol)}` }),
-        })
       })
   }
 
@@ -363,10 +359,9 @@ function WithdrawForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (
     if (p.queued > 0) rows.push({ label: app.summaries.rowQueued, value: formatToken(p.queued, symbol, locale) })
     void tx
       .run({ title: t(app.summaries.withdraw, { amount: formatToken(value, symbol, locale) }), rows, movesValue: true }, (hash) => {
-        const r = actions.withdraw(symbol, value, hash)
-        setDone(r)
-        if (r.instant > 0) toast.success(t(app.toasts.withdrawn, { amount: formatToken(r.instant, symbol, locale) }))
-        if (r.queued > 0) toast(t(app.toasts.queued, { amount: formatToken(r.queued, symbol, locale) }), { description: app.toasts.queuedBody })
+        // Confirmation is shown inline (and the queue card appears beside it),
+        // so no toast here: it would sit on top of this very panel.
+        setDone(actions.withdraw(symbol, value, hash, field.max))
       })
       .then((r) => {
         if (r.ok) {

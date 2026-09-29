@@ -153,10 +153,8 @@ function Positions({ perPool }: { perPool: ReturnType<typeof earnings>["perPool"
                   <TokenMark symbol={r.symbol} />
                   <div className="min-w-0">
                     <p className="font-bold">{r.symbol}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      <Amount value={r.shares} symbol={r.symbol} locale={locale} label={shareSymbol(r.symbol)} className="inline-flex" />
-                      {since ? <> · {t(p.since, { date: formatDate(since, locale) })}</> : null}
-                    </p>
+                    <Amount value={r.shares} symbol={r.symbol} locale={locale} label={shareSymbol(r.symbol)} className="text-xs text-muted-foreground" />
+                    {since ? <p className="text-xs text-muted-foreground">{t(p.since, { date: formatDate(since, locale) })}</p> : null}
                   </div>
                 </div>
                 <dl className="grid flex-1 basis-64 grid-cols-3 gap-3 text-sm">

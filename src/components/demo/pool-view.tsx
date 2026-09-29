@@ -52,7 +52,10 @@ export function PoolView({ symbol }: { symbol: TokenSymbol }) {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <Link href={href(locale, "/app")} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground">
+        <Link
+          href={href(locale, "/app")}
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeftIcon className="size-4" aria-hidden="true" />
           {p.back}
         </Link>
@@ -73,109 +76,111 @@ export function PoolView({ symbol }: { symbol: TokenSymbol }) {
         {stats.map((s) => (
           <div key={s.label} className="bg-card p-4">
             <dt className="text-xs font-semibold text-muted-foreground">{s.label}</dt>
-            <dd className={s.strong ? "mt-1 font-mono text-xl font-bold text-primary-ink tabular-nums" : "mt-1 font-mono text-lg font-bold tabular-nums"}>{s.value}</dd>
+            <dd className={s.strong ? "mt-1 font-mono text-xl font-bold text-primary-ink tabular-nums" : "mt-1 font-mono text-lg font-bold tabular-nums"}>
+              {s.value}
+            </dd>
           </div>
         ))}
       </dl>
 
+      {/* One grid so phones get curve → panel → history, while desktops keep the panel in a sticky right column. */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
-        <div className="flex min-w-0 flex-col gap-6">
-          <section aria-labelledby="curve-title" className="rounded-3xl border bg-card p-4 sm:p-6">
-            <h2 id="curve-title" className="text-lg font-bold">
-              {p.curveTitle}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">{p.curveBody}</p>
-            <RateCurve
-              className="mt-4"
-              model={pool.model}
-              utilization={u}
-              preview={preview?.u ?? null}
-              labels={{
-                x: curve.x,
-                borrow: curve.borrow,
-                supply: curve.supply,
-                optimal: t(curve.optimal, { value: pct0(pool.model.kink) }),
-                now: curve.now,
-                after: preview?.kind === "withdraw" ? curve.afterWithdraw : curve.after,
-              }}
-              formatPct={pct0}
-              formatRate={pct}
-              ariaLabel={`${t(curve.label, { token: symbol })}. ${curve.now}: ${p.stats.utilization} ${pct(u)}, ${p.stats.supplyApy} ${pct(apy)}${
-                preview ? `. ${preview.kind === "withdraw" ? curve.afterWithdraw : curve.after}: ${pct(preview.u)}, ${pct(supplyRate(preview.u, pool.model))}` : ""
-              }`}
-            />
-          </section>
+        <section aria-labelledby="curve-title" className="min-w-0 rounded-3xl border bg-card p-4 sm:p-6 lg:col-start-1">
+          <h2 id="curve-title" className="text-lg font-bold">
+            {p.curveTitle}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">{p.curveBody}</p>
+          <RateCurve
+            className="mt-4"
+            model={pool.model}
+            utilization={u}
+            preview={preview?.u ?? null}
+            labels={{
+              x: curve.x,
+              borrow: curve.borrow,
+              supply: curve.supply,
+              optimal: t(curve.optimal, { value: pct0(pool.model.kink) }),
+              now: curve.now,
+              after: preview?.kind === "withdraw" ? curve.afterWithdraw : curve.after,
+            }}
+            formatPct={pct0}
+            formatRate={pct}
+            ariaLabel={`${t(curve.label, { token: symbol })}. ${curve.now}: ${p.stats.utilization} ${pct(u)}, ${p.stats.supplyApy} ${pct(apy)}${
+              preview
+                ? `. ${preview.kind === "withdraw" ? curve.afterWithdraw : curve.after}: ${pct(preview.u)}, ${pct(supplyRate(preview.u, pool.model))}`
+                : ""
+            }`}
+          />
+        </section>
 
-          <section aria-labelledby="history-title" className="rounded-3xl border bg-card p-4 sm:p-6">
-            <h2 id="history-title" className="text-lg font-bold">
-              {p.historyTitle}
-            </h2>
-            <div className="mt-4 grid gap-6 sm:grid-cols-2">
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground">{p.stats.supplyApy}</h3>
-                <SeriesChart
-                  height={160}
-                  data={history.map((h) => ({ t: Date.parse(h.t), v: h.supplyApy }))}
-                  seriesName={p.stats.supplyApy}
-                  ariaLabel={t(p.historyLabel, { token: symbol })}
-                  formatX={(ts) => formatShortDate(ts, locale)}
-                  formatY={(v) => formatPercent(v, locale, 1)}
-                  formatTooltip={pct}
-                />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground">{p.stats.utilization}</h3>
-                <SeriesChart
-                  height={160}
-                  color="var(--chart-3)"
-                  data={history.map((h) => ({ t: Date.parse(h.t), v: h.utilization }))}
-                  seriesName={p.stats.utilization}
-                  ariaLabel={t(p.historyLabel, { token: symbol })}
-                  formatX={(ts) => formatShortDate(ts, locale)}
-                  formatY={pct0}
-                  formatTooltip={pct}
-                  yDomain={[0, 1]}
-                />
-              </div>
-            </div>
-          </section>
-
-          <div className="grid gap-6 sm:grid-cols-2">
-            <section aria-labelledby="share-title" className="rounded-3xl border bg-card p-4 sm:p-6">
-              <h2 id="share-title" className="text-lg font-bold">
-                {p.share.title}
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">{t(p.share.rate, { share: shareSymbol(symbol) })}</p>
-              <p className="font-mono text-2xl font-bold tabular-nums">
-                {formatNumber(pool.index, locale, 8)} <span className="font-sans text-sm text-muted-foreground">{symbol}</span>
-              </p>
-              {position ? (
-                <p className="mt-3 text-sm">
-                  {p.share.yours}{" "}
-                  <Amount value={position.shares} symbol={symbol} locale={locale} label={shareSymbol(symbol)} className="inline-flex font-bold" />{" "}
-                  {p.share.worth} <span className="font-mono font-bold tabular-nums">{formatToken(position.shares * pool.index, symbol, locale, 6)}</span>
-                </p>
-              ) : (
-                <p className="mt-3 text-sm text-muted-foreground">{t(p.share.none, { share: shareSymbol(symbol) })}</p>
-              )}
-            </section>
-            <section aria-labelledby="params-title" className="rounded-3xl border bg-card p-4 sm:p-6">
-              <h2 id="params-title" className="text-lg font-bold">
-                {p.params.title}
-              </h2>
-              <p className="mt-1 text-xs text-muted-foreground">{p.params.body}</p>
-              <ParamList model={pool.model} />
-              <Link href={howHref} className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-primary-ink underline underline-offset-4">
-                {p.params.playground}
-                <ArrowRightIcon className="size-4" aria-hidden="true" />
-              </Link>
-            </section>
-          </div>
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-24">
+        <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-3 lg:row-start-1">
           <ActionPanel symbol={symbol} onPreview={setPreview} />
           <QueueList demo={demo} now={now} only={symbol} />
+        </div>
+
+        <section aria-labelledby="history-title" className="min-w-0 rounded-3xl border bg-card p-4 sm:p-6 lg:col-start-1">
+          <h2 id="history-title" className="text-lg font-bold">
+            {p.historyTitle}
+          </h2>
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground">{p.stats.supplyApy}</h3>
+              <SeriesChart
+                height={160}
+                data={history.map((h) => ({ t: Date.parse(h.t), v: h.supplyApy }))}
+                seriesName={p.stats.supplyApy}
+                ariaLabel={t(p.historyLabel, { token: symbol })}
+                formatX={(ts) => formatShortDate(ts, locale)}
+                formatY={(v) => formatPercent(v, locale, 1)}
+                formatTooltip={pct}
+              />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground">{p.stats.utilization}</h3>
+              <SeriesChart
+                height={160}
+                color="var(--chart-3)"
+                data={history.map((h) => ({ t: Date.parse(h.t), v: h.utilization }))}
+                seriesName={p.stats.utilization}
+                ariaLabel={t(p.historyLabel, { token: symbol })}
+                formatX={(ts) => formatShortDate(ts, locale)}
+                formatY={pct0}
+                formatTooltip={pct}
+                yDomain={[0, 1]}
+              />
+            </div>
+          </div>
+        </section>
+
+        <div className="grid min-w-0 gap-6 sm:grid-cols-2 lg:col-start-1">
+          <section aria-labelledby="share-title" className="rounded-3xl border bg-card p-4 sm:p-6">
+            <h2 id="share-title" className="text-lg font-bold">
+              {p.share.title}
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">{t(p.share.rate, { share: shareSymbol(symbol) })}</p>
+            <p className="font-mono text-2xl font-bold tabular-nums">
+              {formatNumber(pool.index, locale, 8)} <span className="font-sans text-sm text-muted-foreground">{symbol}</span>
+            </p>
+            {position ? (
+              <p className="mt-3 text-sm">
+                {p.share.yours} <Amount value={position.shares} symbol={symbol} locale={locale} label={shareSymbol(symbol)} className="inline-flex font-bold" />{" "}
+                {p.share.worth} <span className="font-mono font-bold tabular-nums">{formatToken(position.shares * pool.index, symbol, locale, 6)}</span>
+              </p>
+            ) : (
+              <p className="mt-3 text-sm text-muted-foreground">{t(p.share.none, { share: shareSymbol(symbol) })}</p>
+            )}
+          </section>
+          <section aria-labelledby="params-title" className="rounded-3xl border bg-card p-4 sm:p-6">
+            <h2 id="params-title" className="text-lg font-bold">
+              {p.params.title}
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">{p.params.body}</p>
+            <ParamList model={pool.model} />
+            <Link href={howHref} className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-primary-ink underline underline-offset-4">
+              {p.params.playground}
+              <ArrowRightIcon className="size-4" aria-hidden="true" />
+            </Link>
+          </section>
         </div>
       </div>
     </div>

@@ -103,10 +103,10 @@ export const actions = {
   supply(symbol: TokenSymbol, amount: number, hash: string) {
     update((s) => ops.supply(s, symbol, amount, meta(hash), demoNow()).state)
   },
-  withdraw(symbol: TokenSymbol, amount: number, hash: string) {
+  withdraw(symbol: TokenSymbol, amount: number, hash: string, all = false) {
     let result = { instant: 0, queued: 0 }
     update((s) => {
-      const r = ops.withdraw(s, symbol, amount, meta(hash), demoNow())
+      const r = ops.withdraw(s, symbol, amount, meta(hash), demoNow(), all)
       result = { instant: r.instant, queued: r.queued }
       return r.state
     })

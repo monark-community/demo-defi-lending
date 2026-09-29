@@ -100,9 +100,12 @@ export function planWithdrawal(pool: Pool, amount: number) {
   return { instant, queued: Math.max(amount - instant, 0) }
 }
 
-export function withdraw(s: DemoState, symbol: TokenSymbol, amount: number, meta: Meta, now: number) {
+/** `all` withdraws the whole position at the moment of confirmation (no dust left behind). */
+export function withdraw(s: DemoState, symbol: TokenSymbol, requested: number, meta: Meta, now: number, all = false) {
   let next = accrueAll(s, now)
   let pool = next.pools[symbol]
+  const held = (next.positions.find((p) => p.symbol === symbol)?.shares ?? 0) * pool.index
+  const amount = all ? held : Math.min(requested, held)
   const { instant, queued } = planWithdrawal(pool, amount)
   if (instant > 0) {
     const shares = instant / pool.index
@@ -113,7 +116,8 @@ export function withdraw(s: DemoState, symbol: TokenSymbol, amount: number, meta
     next = log(next, { kind: "withdraw", symbol, amount: instant, sharesDelta: -shares, ...meta })
   }
   if (queued > 0) {
-    const shares = queued / pool.index
+    const remaining = next.positions.find((p) => p.symbol === symbol)?.shares ?? 0
+    const shares = all ? remaining : Math.min(queued / pool.index, remaining)
     // Queued shares leave your position but stay yours (and keep earning) until paid.
     next = withShares(next, symbol, -shares, meta.at)
     const entry = { id: randomId("q"), owner: "you", address: next.wallet.address, shares, requestedAt: meta.at }

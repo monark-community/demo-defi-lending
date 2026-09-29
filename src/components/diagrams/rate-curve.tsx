@@ -120,6 +120,15 @@ export function RateCurve({
         </text>
       </g>
 
+      {nxt && labels.after ? (
+        <g fontSize="10.5" fontWeight="800">
+          <circle cx={L + 17} cy={T + 44} r={5} fill="var(--card)" stroke="var(--primary)" strokeWidth={2} />
+          <text x={L + 32} y={T + 48} fill="var(--primary-ink)" {...halo}>
+            {labels.after} · {rate(supplyRate(preview!, model))}
+          </text>
+        </g>
+      ) : null}
+
       {/* Where the pool is now */}
       <g style={{ transform: `translate(${cur.x}px, ${cur.y}px)`, transition: "transform 250ms ease-out" }}>
         <line x1={0} x2={0} y1={0} y2={H - B - cur.y} stroke="var(--primary)" strokeWidth={1} opacity={0.5} />
@@ -142,19 +151,6 @@ export function RateCurve({
         <g>
           <line x1={cur.x} y1={cur.y} x2={nxt.x} y2={nxt.y} stroke="var(--primary)" strokeWidth={1.5} strokeDasharray="4 4" />
           <circle cx={nxt.x} cy={nxt.y} r={6.5} fill="var(--card)" stroke="var(--primary)" strokeWidth={2.5} />
-          {labels.after ? (
-            <text
-              x={nxt.x < L + 120 ? nxt.x + 12 : nxt.x - 12}
-              y={nxt.y + 22}
-              textAnchor={nxt.x < L + 120 ? "start" : "end"}
-              fontSize="11"
-              fontWeight="800"
-              fill="var(--primary-ink)"
-              {...halo}
-            >
-              {labels.after} · {rate(supplyRate(preview!, model))}
-            </text>
-          ) : null}
         </g>
       ) : null}
     </svg>

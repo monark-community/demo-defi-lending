@@ -65,7 +65,7 @@ export function Playground({ locale, copy, curve }: { locale: Locale; copy: Dict
           <dl className="mt-3 grid grid-cols-3 gap-3">
             <Result label={copy.borrowApr} value={pct(b)} sub={t(copy.perYear, { amount: formatNumber(EXAMPLE * p.u, locale, 0) })} />
             <Result label={copy.supplyApy} value={pct(s)} sub={t(copy.perYear, { amount: formatNumber(EXAMPLE, locale, 0) })} strong />
-            <Result label={copy.reserveCut} value={pct(p.reserveFactor)} sub={`≈ ${formatNumber(EXAMPLE * reserve, locale, 0)} / ${formatNumber(EXAMPLE, locale, 0)}`} />
+            <Result label={copy.reserveCut} value={pct(p.reserveFactor)} sub={t(copy.reserveSub, { amount: formatNumber(EXAMPLE * reserve, locale, 0) })} />
           </dl>
           <p className="mt-3 text-sm text-muted-foreground">{above ? copy.explain.above : copy.explain.below}</p>
           <p className="mt-2 text-xs text-muted-foreground">{copy.example}</p>

@@ -29,7 +29,7 @@ export const available = (p: Pick<Pool, "borrowed" | "supplied">) => Math.max(p.
 
 export function utilizationState(u: number, m: RateModel): UtilizationState {
   if (u > m.kink) return "tight"
-  if (u > m.kink - 0.15) return "busy"
+  if (u > m.kink - 0.1) return "busy"
   return "comfortable"
 }
 
