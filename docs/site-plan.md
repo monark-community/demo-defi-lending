@@ -69,7 +69,7 @@ All routes live under `/en/…` and `/fr/…`; `/` redirects to the visitor's pr
 |-|-|-|
 | `/` (home) | Explain the idea in 30 seconds and send people into the demo | Hero (live curve + ticker, mesh butterfly) · "Where the yield comes from" line-art flow (lenders → pool → borrowers → interest back, reserve slice) · three benefits · "Three things to watch" (rate curve, share token, withdrawal queue, each with a mini visual) · Who it's for (3 photos) · FAQ · closing CTA |
 | `/app` | The working product: your lending dashboard + markets | App bar (network, disclaimer, demo controls incl. time travel and reset) · connect gate (when disconnected) · summary tiles (supplied, earned, blended APY, queued) · earnings chart · your positions (live tickers) · withdrawal queue (if any) · markets table (5 pools) · activity log |
-| `/app/pool/[symbol]` | One pool: understand it and act on it | Pool header (token, utilization state, stats) · rate curve with live "your deposit moves the rate" preview · 90-day APY/utilization history chart · Supply / Withdraw panel (approval step, preview, tx states, disclaimer) · pool parameters (governance) · share-token exchange rate |
+| `/app/pool/[symbol]` (tUSDC, tDAI, tETH, tWBTC, tLINK) | One pool: understand it and act on it | Pool header (token, utilization state, stats) · rate curve with live "your deposit moves the rate" preview · Supply / Withdraw panel (approval step, preview, tx states, disclaimer; sticky right column on desktop, right after the curve on phones) and this pool's queue card · 90-day supply APY and utilization charts (two small multiples, never a dual axis) · share-token exchange rate · pool parameters (governance) |
 | `/how-it-works` | **Extra page, justified:** Yieldmine's reason to exist is teaching (project page: "an excellent way to teach lending mechanics"). The home page can't hold an interactive rate model | Intro · rate-model playground (sliders: utilization, optimal utilization, slopes, reserve factor) · share tokens explained · withdrawal queue explained · glossary · how Yieldmine fits the Monark DeFi family · CTA |
 | `/credits` | Photo credits required by the asset rules (linked from the footer) | Photos · type & icons · brand |
 | `/pricing` | Internal strategy review only. **Never linked**, not in the sitemap, `noindex, nofollow` | Model, costs, partner note, reasoning |
@@ -110,9 +110,9 @@ Every transaction goes through the simulated wallet prompt (confirm / reject) �
    borrow and repay day by day, interest accrues, the earnings chart extends by 30 days, a toast reports what you earned
    ("+ $41.20 earned over 30 days"). *Empty state:* with no positions, the chart and positions show "Nothing supplied yet".
 4. **Withdraw from a tight pool (tLINK).** Pool page shows tLINK at 95.9% utilization ("Tight" in amber) → Withdraw tab →
-   "Max" → the panel explains "1,740 tLINK can leave now; 660 tLINK will join the withdrawal queue" → confirm → instant part
+   "Max" → the panel explains "1,740 tLINK can leave now; about 690 tLINK will join the withdrawal queue" → confirm → instant part
    paid (confirmed), queue card appears with position #1 and the amount waiting → "Skip ahead 1 day" → borrowers repay →
-   queue fills, toast "Your queued 660 tLINK withdrawal was paid". Alternative: "Cancel queued withdrawal" (tx) returns the
+   queue fills, toast "Your queued 690.65 tLINK withdrawal was paid". Alternative: "Cancel queued withdrawal" (tx) returns the
    shares to your position. *Failed:* as above; nothing moves on failure.
 5. **Play with the rate model.** How it works → sliders for utilization, optimal utilization, base rate, slopes, reserve factor →
    borrow APR, supply APY and the reserve's cut update live with the curve; presets "Stablecoin pool", "Volatile asset";
@@ -157,7 +157,7 @@ The complete strings live in `src/i18n/dictionaries/en.ts` and `fr.ts`; the key 
 | Dashboard H1 | Your lending | Vos prêts |
 | Tiles | Supplied · Earned so far · Blended APY · Waiting in queue | Déposé · Gagné jusqu'ici · APY moyen · En file d'attente |
 | Markets | Markets · Pool · Supply APY · Utilization · Available · Your supply | Marchés · Pool · APY dépôt · Utilisation · Disponible · Votre dépôt |
-| Utilization states | Comfortable (under 70%), Busy (70–optimal), Tight (above optimal) — always with text | Confortable, Achalandé, Serré |
+| Utilization states | Comfortable (more than 10 points below optimal), Busy (within 10 points of optimal), Tight (above optimal) — always with text | Confortable, Achalandé, Serré |
 | Supply button | Supply {amount} {token} | Déposer {amount} {token} |
 | Approve step | Allow Yieldmine to use your {token} | Autoriser Yieldmine à utiliser vos {token} |
 | Withdraw split | {now} can leave now · {queued} will join the withdrawal queue | {now} peuvent sortir maintenant · {queued} rejoindront la file de retrait |
@@ -221,3 +221,18 @@ never linked, excluded from the sitemap, `noindex, nofollow`. No price is mentio
 - No multi-account or multi-user state; one demo wallet per browser.
 - No historical data beyond the seeded 90 days plus whatever time travel adds.
 - Amounts use JavaScript numbers (not bigint) for continuous interest; display rounding hides float dust. **Decision**, fine for a demo.
+
+## 12. Decisions taken while building
+
+- **Community-sized pools.** The seeded pools hold tens of thousands of test tokens (tUSDC 48k, tDAI 21k, tLINK 42k, tETH 18, tWBTC 1.9),
+  not millions: they're community testnet pools, and at that size a visitor's 1,500 tDAI visibly moves the curve (70.00% → 65.36%),
+  which is the point of signature moment 1.
+- **The "after" point is named in the legend**, not beside the dot, so it never collides with the "Now" label on steep curves.
+- **Toasts only for events without inline feedback** (time skips, queue payouts, faucet, reset, cancelled queue entries). Supply,
+  approval and withdrawal confirm inline in the panel, because a top-right toast would sit on that very panel. Toasts sit top-right
+  under the header and app bar on desktop and just below the header on phones, where page titles leave room.
+- **"Max" withdrawals** redeem the whole position at confirmation time, so no dust of shares is left behind while interest ticks.
+- **Faucet from the demo controls** closes the controls dialog before the wallet prompt opens (two stacked Radix modals can freeze the page);
+  its progress is reported by a single updating toast.
+- **Demo date** is shown in the app bar so time travel is visible; the demo clock runs at real speed between skips.
+- **Seeded wallet holder** is "Camille Roy", a name that reads naturally in English and French.
