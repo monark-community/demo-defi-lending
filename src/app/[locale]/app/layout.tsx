@@ -19,7 +19,6 @@ export default async function AppLayout({ children, params }: LayoutProps<"/[loc
         curve: dict.common.curve,
         howHref: href(locale, "/how-it-works"),
         disclaimer: dict.common.disclaimer,
-        demoBadge: dict.common.demoBadge,
       }}
     >
       <AppFrame>{children}</AppFrame>

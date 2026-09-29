@@ -54,8 +54,8 @@ Supporting benefits (outcomes):
 
 - **Headline (EN):** "Lend to a shared pool. See why it pays." (9 words)
 - **Headline (FR):** « Prêtez à un pool commun. Voyez ce qui le fait rapporter. »
-- **Subheadline (EN):** "Yieldmine is Monark's testnet lending pool for learning. Supply test tokens, watch borrowers' demand set your rate in real time, and take them back out whenever the pool allows."
-- **Primary CTA:** "Launch the demo" → `/{locale}/app`. **Secondary:** "See how rates work" → `/{locale}/how-it-works`.
+- **Subheadline (EN):** "Supply test tokens and watch borrowers' demand set your rate." (10 words, simplification pass)
+- **Primary CTA:** "Launch the demo" → `/{locale}/app`. **Secondary:** "How rates work" → `/{locale}/how-it-works`.
 - **Hero visual:** a live product fragment built in code (not a screenshot, not a stock photo): the tUSDC pool's
   kinked interest-rate curve with the pool's current point, and beneath it a position card whose value ticks up every second
   (8,000 tUSDC supplied → growing). It is the product's key idea in one glance: demand sets the rate, the rate grows your balance.
@@ -67,20 +67,22 @@ All routes live under `/en/…` and `/fr/…`; `/` redirects to the visitor's pr
 
 | Route | Purpose | Sections, in order |
 |-|-|-|
-| `/` (home) | Explain the idea in 30 seconds and send people into the demo | Hero (live curve + ticker, mesh butterfly) · "Where the yield comes from" line-art flow (lenders → pool → borrowers → interest back, reserve slice) · three benefits · "Three things to watch" (rate curve, share token, withdrawal queue, each with a mini visual) · Who it's for (3 photos) · FAQ · closing CTA |
-| `/app` | The working product: your lending dashboard + markets | App bar (network, disclaimer, demo controls incl. time travel and reset) · connect gate (when disconnected) · summary tiles (supplied, earned, blended APY, queued) · earnings chart · your positions (live tickers) · withdrawal queue (if any) · markets table (5 pools) · activity log |
-| `/app/pool/[symbol]` (tUSDC, tDAI, tETH, tWBTC, tLINK) | One pool: understand it and act on it | Pool header (token, utilization state, stats) · rate curve with live "your deposit moves the rate" preview · Supply / Withdraw panel (approval step, preview, tx states, disclaimer; sticky right column on desktop, right after the curve on phones) and this pool's queue card · 90-day supply APY and utilization charts (two small multiples, never a dual axis) · share-token exchange rate · pool parameters (governance) |
-| `/how-it-works` | **Extra page, justified:** Yieldmine's reason to exist is teaching (project page: "an excellent way to teach lending mechanics"). The home page can't hold an interactive rate model | Intro · rate-model playground (sliders: utilization, optimal utilization, slopes, reserve factor) · share tokens explained · withdrawal queue explained · glossary · how Yieldmine fits the Monark DeFi family · CTA |
+| `/` (home) | Explain the idea in 30 seconds and send people into the demo | Hero (live curve + ticker, mesh butterfly) · "Where the yield comes from" line-art flow with 4 step titles · "Three things to watch" (rate curve, share token, withdrawal queue, each a mini visual + one line) · Who it's for (3 photos) · FAQ (4) · closing CTA. Five sections after the hero (Restraint rule). |
+| `/app` | The working product: your lending dashboard + markets | One compact app bar (network, demo date, demo controls incl. time travel and reset; no disclaimer) · connect gate (when disconnected) · summary tiles (supplied, earned, blended APY, queued) · earnings chart · your positions (live tickers) · withdrawal queue (if any; explanation in an info popover) · markets table (5 pools) · activity log (5 rows + "Show all"; hash in the date tooltip) |
+| `/app/pool/[symbol]` (tUSDC, tDAI, tETH, tWBTC, tLINK) | One pool: understand it and act on it | Pool header (token, utilization state with an info popover, 6 stats) · rate curve (how-to-read in an info popover) with live "your deposit moves the rate" preview · Supply / Withdraw panel (approval step with a "Why approve?" popover, preview, tx states; sticky right column on desktop, right after the curve on phones) and this pool's queue card · 90-day supply APY and utilization charts (two small multiples, never a dual axis) · share-token exchange rate · pool parameters (governance, folded in a disclosure) |
+| `/how-it-works` | **Extra page, justified:** Yieldmine's reason to exist is teaching (project page: "an excellent way to teach lending mechanics"). The home page can't hold an interactive rate model | One-line intro · rate-model playground (sliders: utilization, optimal utilization, slopes, reserve factor) · share tokens explained · withdrawal queue explained · glossary (folded) · how Yieldmine fits the Monark DeFi family · CTA |
 | `/credits` | Photo credits required by the asset rules (linked from the footer) | Photos · type & icons · brand |
 | `/pricing` | Internal strategy review only. **Never linked**, not in the sitemap, `noindex, nofollow` | Model, costs, partner note, reasoning |
 | 404 | Localized not-found with the vertical Monark logo | |
 
-**Header** (standard Monark shell): "Yieldmine by Monark" pairing · links: Overview, How it works, Demo · EN/FR switch · theme toggle ·
-primary action ("Launch demo" on marketing pages, the `connect-wallet` control inside the app). Mobile: pairing + menu sheet.
+**Header** (standard Monark shell, brand guidelines §2 and §10): butterfly mark 28px + "Yieldmine" (Nunito Sans 800, 18px) on one line, no "by Monark" ·
+links left after the brand: Overview, How it works, Demo · right: Demo chip (primary 8% light / 15% dark) → EN/FR pill → 36px theme toggle →
+primary action ("Launch demo" on marketing pages, the `connect-wallet` control inside the app). Below `lg`: brand + menu button; the sheet holds the rest.
+Marketing pages have exactly one top bar: this header.
 
-**Footer** (standard three bands): product line + links (Overview, How it works, Demo, Credits) and the
-"Part of the Monark DeFi demos" row (Fluidswap, BorrowX, VaultLend) · Monark logo, tagline, project page, GitHub repo, socials ·
-© Monark · Open source, "Demo · simulated data", disclaimer, photo credits link.
+**Footer** (standard three bands): product line (11 words) + links (Overview, How it works, Demo, Credits) and the
+"Part of the Monark DeFi demos" row (Fluidswap, BorrowX, VaultLend) · "Yieldmine is built by Monark", Monark logo, tagline, project page, GitHub repo, socials ·
+© Monark · Open source, "Demo · simulated data", photo credits link. The testnet disclaimer is **not** in the footer: it appears once per transaction, in the wallet prompt.
 
 ## 5. Feature highlights
 
@@ -100,7 +102,7 @@ Every transaction goes through the simulated wallet prompt (confirm / reject) �
 "Fail the next transaction" in demo controls), each with retry.
 
 1. **Connect the demo wallet.** Open `/app` → connect gate → "Connect demo wallet" → wallet prompt asks to sign in (no fee) →
-   confirm: dashboard loads with the seeded positions. *Reject:* gate shows "You declined the sign-in request" and the button stays available.
+   confirm: dashboard loads with the seeded positions. *Reject:* gate shows "You declined the sign-in. Connect again when ready." and the button stays available.
 2. **First supply to a new pool (tDAI).** Markets → tDAI → Supply tab → type 1,500 (validation: empty, zero, more than your
    wallet balance) → preview shows share tokens you'll receive, new utilization, new supply APY, projected 30-day and 1-year
    earnings, and the ghost point sliding on the curve → step 1 "Allow Yieldmine to use your tDAI" (approval tx: pending → confirmed)
@@ -130,30 +132,21 @@ The complete strings live in `src/i18n/dictionaries/en.ts` and `fr.ts`; the key 
 
 | Slot | English | Français |
 |-|-|-|
-| Eyebrow | Lending module · Monark DeFi demos | Module de prêt · Démos DeFi de Monark |
 | H1 | Lend to a shared pool. See why it pays. | Prêtez à un pool commun. Voyez ce qui le fait rapporter. |
-| Sub | Yieldmine is Monark's testnet lending pool for learning. Supply test tokens, watch borrowers' demand set your rate in real time, and take them back out whenever the pool allows. | Yieldmine est le pool de prêt de Monark pour apprendre, sur testnet. Déposez des jetons de test, regardez la demande des emprunteurs fixer votre taux en direct, et récupérez-les dès que le pool le permet. |
-| CTAs | Launch the demo · See how rates work | Lancer la démo · Comprendre les taux |
-| Flow title | Where the yield comes from | D'où vient le rendement |
-| Flow steps | 1 You supply tokens and receive pool shares. 2 Borrowers draw from the pool and pay interest. 3 Interest flows back to every lender, pro rata. 4 A small reserve slice stays with the protocol as a safety buffer. | 1 Vous déposez des jetons et recevez des parts du pool. 2 Les emprunteurs puisent dans le pool et paient des intérêts. 3 Les intérêts reviennent à chaque prêteur, au prorata. 4 Une petite part reste au protocole comme coussin de sécurité. |
-| Benefits title | Lending you can actually follow | Un prêt que vous pouvez vraiment suivre |
-| Benefit 1 | You can explain where the yield comes from — every rate traces back to how much of the pool is borrowed. | Vous savez expliquer d'où vient le rendement : chaque taux découle de la part du pool qui est empruntée. |
-| Benefit 2 | You see your deposit's effect before you sign — the new rate, your share tokens and 30-day earnings. | Vous voyez l'effet de votre dépôt avant de signer : le nouveau taux, vos parts et vos gains sur 30 jours. |
-| Benefit 3 | You're never surprised when you withdraw — what leaves now, what waits in line, and why. | Aucune surprise au retrait : ce qui sort tout de suite, ce qui attend dans la file, et pourquoi. |
-| Watch title | Three things to watch in the demo | Trois choses à observer dans la démo |
-| Watch 1 | **The curve.** Rates climb gently until the pool is 85% borrowed, then steeply, to pull lenders back in. | **La courbe.** Les taux montent doucement jusqu'à 85 % d'utilisation, puis en flèche, pour attirer de nouveaux prêteurs. |
-| Watch 2 | **Your share tokens.** You keep the same number of ym-tokens; each one is simply worth a bit more every block. | **Vos parts.** Vous gardez le même nombre de jetons ym ; chacun vaut simplement un peu plus à chaque bloc. |
-| Watch 3 | **The queue.** When most of a pool is lent out, the rest of your withdrawal waits in line and is paid as borrowers repay. | **La file.** Quand un pool est presque entièrement prêté, le reste de votre retrait attend son tour et est versé au fil des remboursements. |
-| Who title | Built for people learning DeFi together | Conçu pour apprendre la DeFi ensemble |
-| Who items | Students: a safe place to see lending mechanics before a course project. Developers: the behaviour your contracts must reproduce, share accounting included. Workshop hosts: a demo you can run live with a room, reset in one click. | Étudiants : un terrain sûr pour voir la mécanique du prêt avant un projet de cours. Développeurs : le comportement que vos contrats doivent reproduire, comptabilité des parts comprise. Animateurs d'ateliers : une démo à faire vivre devant un groupe, remise à zéro en un clic. |
-| FAQ | Is this real money? — No. Testnet tokens, simulated chain, nothing leaves your browser. · Where does the yield come from? — Interest paid by borrowers, shared by every lender in proportion to their shares, minus the reserve. · Why can't I withdraw everything right now? — Only unborrowed tokens can leave; the rest joins a queue paid as loans are repaid. · What are ym-tokens? — Receipts for your share of a pool; their exchange rate rises as interest arrives. · Can the rates change? — Yes, every time someone supplies, borrows, repays or withdraws; the community also votes on the curve. · How does Yieldmine relate to BorrowX and VaultLend? — Yieldmine is the lender's view; BorrowX the borrower's; VaultLend the risk view; Fluidswap the trader's. | C'est de l'argent réel ? — Non. Jetons de testnet, chaîne simulée, rien ne quitte votre navigateur. · D'où vient le rendement ? — Des intérêts payés par les emprunteurs, partagés entre les prêteurs selon leurs parts, moins la réserve. · Pourquoi ne puis-je pas tout retirer tout de suite ? — Seuls les jetons non empruntés peuvent sortir ; le reste rejoint une file, payée au fil des remboursements. · Que sont les jetons ym ? — Des reçus de votre part du pool ; leur taux de change monte à mesure que les intérêts arrivent. · Les taux peuvent-ils changer ? — Oui, à chaque dépôt, emprunt, remboursement ou retrait ; la communauté vote aussi sur la courbe. · Quel lien avec BorrowX et VaultLend ? — Yieldmine est la vue du prêteur ; BorrowX celle de l'emprunteur ; VaultLend celle du risque ; Fluidswap celle du trader. |
-| Closing | Supply your first test tokens · It takes a minute, and you can reset anytime. · Launch the demo | Déposez vos premiers jetons de test · Une minute suffit, et vous pouvez tout réinitialiser. · Lancer la démo |
+| Sub | Supply test tokens and watch borrowers' demand set your rate. | Déposez des jetons de test : la demande des emprunteurs fixe votre taux, en direct. |
+| CTAs | Launch the demo · How rates work | Lancer la démo · Comprendre les taux |
+| Flow | Where the yield comes from · 1 You supply tokens · 2 Borrowers draw from it · 3 Interest flows back · 4 A reserve is kept | D'où vient le rendement · 1 Vous déposez des jetons · 2 Les emprunteurs y puisent · 3 Les intérêts reviennent · 4 Une réserve est conservée |
+| Watch title | Three things to watch | Trois choses à observer |
+| Watch items | **The curve.** Rates climb gently, then steeply past the optimal point. · **Your share tokens.** Same number of tokens, each worth a little more. · **The queue.** When a pool is lent out, the rest waits in line. | **La courbe.** Les taux montent doucement, puis en flèche après l'optimum. · **Vos jetons de parts.** Toujours le même nombre, chacun vaut un peu plus. · **La file d'attente.** Quand le pool est prêté, le reste attend son tour. |
+| Who | Built for learning DeFi together · Students: See lending mechanics before a course project. · Developers: The behaviour your contracts must reproduce. · Workshop hosts: Run it live, skip a month, reset in one click. | Conçu pour apprendre la DeFi ensemble · Étudiants : Voir la mécanique du prêt avant un projet de cours. · Développeurs : Le comportement que vos contrats doivent reproduire. · Animateurs d'ateliers : En direct, avancez d'un mois, remettez à zéro en un clic. |
+| FAQ (4, the site's only FAQ) | Is this real money? — No. Simulated testnet tokens: nothing leaves your browser and nothing has value. · Where does the yield come from? — Interest paid by borrowers, shared among lenders after the protocol's reserve slice. · Why can't I withdraw everything at once? — Only unlent tokens can leave. The rest waits in a queue, paid as borrowers repay. · How does it fit with the other Monark demos? — Yieldmine is the lender's view. BorrowX covers borrowing, VaultLend risk, Fluidswap swaps. | C'est de l'argent réel ? · D'où vient le rendement ? · Pourquoi ne puis-je pas tout retirer d'un coup ? · Quel lien avec les autres démos de Monark ? (answers in `fr.ts`) |
+| Closing | Supply your first test tokens · Launch the demo | Déposez vos premiers jetons de test · Lancer la démo |
 
 ### App (selection)
 
 | Slot | English | Français |
 |-|-|-|
-| Gate | Connect the demo wallet to start lending · You'll get a funded test wallet with a few positions already earning. | Connectez le portefeuille de démo pour commencer à prêter · Vous recevez un portefeuille de test garni, avec quelques positions qui rapportent déjà. |
+| Gate | Connect the demo wallet to start lending · You get a funded test wallet, already earning. | Connectez le portefeuille de démo pour commencer à prêter · Vous recevez un portefeuille de test garni, qui rapporte déjà. |
 | Dashboard H1 | Your lending | Vos prêts |
 | Tiles | Supplied · Earned so far · Blended APY · Waiting in queue | Déposé · Gagné jusqu'ici · APY moyen · En file d'attente |
 | Markets | Markets · Pool · Supply APY · Utilization · Available · Your supply | Marchés · Pool · APY dépôt · Utilisation · Disponible · Votre dépôt |
@@ -163,7 +156,7 @@ The complete strings live in `src/i18n/dictionaries/en.ts` and `fr.ts`; the key 
 | Withdraw split | {now} can leave now · {queued} will join the withdrawal queue | {now} peuvent sortir maintenant · {queued} rejoindront la file de retrait |
 | Pending / confirmed | Waiting for the network… · Confirmed | En attente du réseau… · Confirmé |
 | Errors | Enter an amount · Enter more than zero · That's more than your wallet holds · That's more than you supplied · You rejected the request in your wallet · The transaction failed on the network; nothing moved | Entrez un montant · Entrez plus que zéro · C'est plus que ce que contient votre portefeuille · C'est plus que ce que vous avez déposé · Vous avez refusé la demande dans votre portefeuille · La transaction a échoué sur le réseau ; rien n'a bougé |
-| Empty states | Nothing supplied yet — pick a market below to start earning. · No activity yet. · Your wallet has no {token}; get test tokens from the demo controls. | Rien de déposé pour l'instant — choisissez un marché ci-dessous. · Aucune activité pour l'instant. · Votre portefeuille ne contient pas de {token} ; obtenez des jetons de test dans les contrôles de démo. |
+| Empty states | Nothing supplied yet. Pick a market below. · No activity yet. · Your wallet has no {token}. Get test tokens in Demo controls. | Rien de déposé pour l'instant. Choisissez un marché ci-dessous. · Aucune activité pour l'instant. · Votre portefeuille ne contient pas de {token}. Obtenez-en dans les contrôles de démo. |
 | Demo controls | Skip ahead 1 day / 7 days / 30 days · Slow network · Fail the next transaction · Get test tokens · Reset demo | Avancer de 1 jour / 7 jours / 30 jours · Réseau lent · Faire échouer la prochaine transaction · Obtenir des jetons de test · Réinitialiser la démo |
 | Storage error | Your browser isn't saving demo data, so a reload starts over. Everything else works. | Votre navigateur n'enregistre pas les données de démo : un rechargement repart de zéro. Tout le reste fonctionne. |
 | 404 | This page isn't in the pool. · The link may be old or mistyped. · Back to home · Open the demo | Cette page n'est pas dans le pool. · Le lien est peut-être ancien ou mal saisi. · Retour à l'accueil · Ouvrir la démo |
@@ -171,9 +164,10 @@ The complete strings live in `src/i18n/dictionaries/en.ts` and `fr.ts`; the key 
 ## 8. Aesthetics (Monark-branded: colour, type, logo, header and footer fixed by the guidelines)
 
 - **Layout and rhythm.** Home: asymmetric hero (copy left, live curve card right) → full-width secondary band for the yield
-  flow diagram → three benefits as icon-top text columns (no cards) → "three things to watch" as three bordered cards with
-  mini visuals → photo row → FAQ accordion → a compact closing band. The branded section divider (line with end circles) is used twice.
-  App: dense, calm, data-first; a thin app bar (network badge, disclaimer, demo controls) under the header; numbers in tabular monospace.
+  flow diagram → "three things to watch" as three bordered cards with mini visuals → photo row → FAQ accordion → a compact
+  closing band. The branded section divider (line with end circles) is used once, before the closing band.
+  App: dense, calm, data-first; one thin app bar (network badge, demo date, demo controls) under the header; numbers in tabular monospace.
+  Context on demand: info popovers (`src/components/ui/info-tip.tsx`) and folded disclosures instead of hint paragraphs.
 - **Hero visual:** coded live rate curve + ticking position card (see §3).
 - **Illustrations:** reuse the mesh butterfly (once, home hero, cropped top-right at ~10% opacity light / 16% dark, flat, no glow).
   New line-art drawn in JSX with flat orange 2px rounded strokes: the yield-flow diagram (lenders → pool → borrowers → back),
@@ -236,3 +230,5 @@ never linked, excluded from the sitemap, `noindex, nofollow`. No price is mentio
   its progress is reported by a single updating toast.
 - **Demo date** is shown in the app bar so time travel is visible; the demo clock runs at real speed between skips.
 - **Seeded wallet holder** is "Camille Roy", a name that reads naturally in English and French.
+- **Simplification pass** (see `docs/simplification.md`): 43% fewer visible words site-wide, standard header/footer, the testnet
+  disclaimer only in the wallet prompt for value-moving transactions, one FAQ (home), no feature or flow removed.

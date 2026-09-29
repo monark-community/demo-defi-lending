@@ -1,12 +1,12 @@
 // Visual check of every page and key flow with Playwright.
 // Usage: pnpm build && pnpm start -p 3132   (in another terminal)
-//        BASE_URL=http://localhost:3132 pnpm screenshots
+//        pnpm screenshots   (BASE_URL defaults to http://localhost:3132)
 // Output: docs/screenshots/<locale>-<width>-<theme>-<name>.png
 import { mkdir } from "node:fs/promises"
 import { fileURLToPath } from "node:url"
 import { chromium } from "playwright"
 
-const BASE = process.env.BASE_URL ?? "http://localhost:3000"
+const BASE = process.env.BASE_URL ?? "http://localhost:3132"
 const OUT = fileURLToPath(new URL("../docs/screenshots/", import.meta.url))
 const ONLY = process.env.ONLY // optional filter on the variant tag
 
@@ -104,7 +104,7 @@ async function appFlows(page, v) {
   await dialog(page).waitFor()
   await shot(page, v, "flow1-connect-prompt")
   await dialog(page).getByRole("button", { name: "Reject" }).click()
-  await page.getByText("You declined the sign-in request").waitFor()
+  await page.getByText("You declined the sign-in").waitFor()
   await shot(page, v, "flow1-connect-rejected")
   await btn.click()
   await confirmPrompt(page, v)

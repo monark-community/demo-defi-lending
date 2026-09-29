@@ -5,6 +5,7 @@ import { useEffect, useId, useState } from "react"
 
 import { QueueBar } from "@/components/diagrams/queue-bar"
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,7 +20,6 @@ import { formatAmount, formatPercent, formatToken } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 import { useAppCopy } from "./app-provider"
-import { Disclaimer } from "./disclaimer"
 import { TxFeedback } from "./tx-feedback"
 
 type Mode = "supply" | "withdraw"
@@ -159,7 +159,7 @@ function PreviewList({ rows }: { rows: { label: string; value: string; strong?: 
 function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p: Preview) => void }) {
   const demo = useDemo()!
   const now = useNow()
-  const { app, locale, disclaimer } = useAppCopy()
+  const { app, locale } = useAppCopy()
   const pn = app.panel
   const id = useId()
   const balance = demo.wallet.balances[symbol]
@@ -278,7 +278,12 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
 
       {!approved ? (
         <ol className="flex flex-col gap-3">
-          <Step n={1} done={false} title={t(pn.approveStep, { token: symbol })} body={t(pn.approveWhy, { token: symbol })}>
+          <Step
+            n={1}
+            done={false}
+            title={t(pn.approveStep, { token: symbol })}
+            info={<InfoTip label={pn.approveInfo}>{t(pn.approveWhy, { token: symbol })}</InfoTip>}
+          >
             <Button type="button" onClick={approve} disabled={busy} className="self-start">
               {t(pn.approveButton, { token: symbol })}
             </Button>
@@ -304,20 +309,35 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
           <TxFeedback state={tx.state} onRetry={supply} onDismiss={tx.reset} />
         </div>
       )}
-      <Disclaimer text={disclaimer} />
     </form>
   )
 }
 
-function Step({ n, done, disabled, title, body, children }: { n: number; done: boolean; disabled?: boolean; title: string; body?: string; children: React.ReactNode }) {
+function Step({
+  n,
+  done,
+  disabled,
+  title,
+  info,
+  children,
+}: {
+  n: number
+  done: boolean
+  disabled?: boolean
+  title: string
+  info?: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
     <li className={cn("flex gap-3 rounded-2xl border p-4", disabled && "opacity-60")}>
       <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border-[1.5px] text-sm font-extrabold", done ? "border-success text-success" : "border-primary")}>
         {done ? <CheckIcon className="size-4" aria-hidden="true" /> : n}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <p className="font-bold">{title}</p>
-        {body ? <p className="text-sm text-muted-foreground">{body}</p> : null}
+        <div className="-my-1 flex items-center gap-1">
+          <p className="font-bold">{title}</p>
+          {info}
+        </div>
         {children}
       </div>
     </li>
@@ -327,7 +347,7 @@ function Step({ n, done, disabled, title, body, children }: { n: number; done: b
 function WithdrawForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p: Preview) => void }) {
   const demo = useDemo()!
   const now = useNow()
-  const { app, locale, disclaimer } = useAppCopy()
+  const { app, locale } = useAppCopy()
   const pn = app.panel
   const id = useId()
   const pool = accrue(demo.pools[symbol], now || demoNow())
@@ -459,7 +479,6 @@ function WithdrawForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (
         {amount ? t(pn.withdrawAmountButton, { amount: formatToken(amount, symbol, locale) }) : pn.withdrawButton}
       </Button>
       <TxFeedback state={tx.state} onRetry={withdraw} onDismiss={tx.reset} />
-      <Disclaimer text={disclaimer} />
     </form>
   )
 }

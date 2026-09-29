@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from "lucide-react"
+import { ArrowRightIcon, ChevronDownIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -40,8 +40,7 @@ export default async function HowPage({ params }: PageProps<"/[locale]/how-it-wo
   return (
     <div className="flex flex-col">
       <section aria-labelledby="how-title" className="mx-auto w-full max-w-6xl px-4 pt-12 pb-10 sm:px-6 lg:pt-16">
-        <p className="eyebrow text-primary-ink">{h.eyebrow}</p>
-        <h1 id="how-title" className="mt-3 max-w-3xl text-4xl font-extrabold tracking-display sm:text-5xl">
+        <h1 id="how-title" className="max-w-3xl text-4xl font-extrabold tracking-display sm:text-5xl">
           {h.title}
         </h1>
         <p className="mt-4 max-w-[62ch] text-lg text-muted-foreground">{h.intro}</p>
@@ -142,21 +141,25 @@ export default async function HowPage({ params }: PageProps<"/[locale]/how-it-wo
         </div>
       </section>
 
-      <section aria-labelledby="glossary-title" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <h2 id="glossary-title" className="text-3xl font-bold tracking-display">
-          {h.glossary.title}
-        </h2>
-        <dl className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
-          {h.glossary.items.map((g) => (
-            <div key={g.term} className="border-l-2 border-primary pl-4">
-              <dt className="font-bold">{g.term}</dt>
-              <dd className="mt-1 text-muted-foreground">{g.def}</dd>
-            </div>
-          ))}
-        </dl>
+      {/* Context on demand: the glossary stays folded until asked for. */}
+      <section aria-labelledby="glossary-title" className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6">
+        <details className="group rounded-3xl border bg-card px-5 py-3 sm:px-6">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+            <h2 id="glossary-title" className="text-xl font-bold">
+              {h.glossary.title}
+            </h2>
+            <ChevronDownIcon className="size-5 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <dl className="mt-4 mb-3 grid gap-x-10 gap-y-5 sm:grid-cols-2">
+            {h.glossary.items.map((g) => (
+              <div key={g.term} className="border-l-2 border-primary pl-4">
+                <dt className="font-bold">{g.term}</dt>
+                <dd className="mt-1 text-muted-foreground">{g.def}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
       </section>
-
-      <SectionDivider />
 
       <section aria-labelledby="family-title" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2">
         <div>
@@ -176,7 +179,6 @@ export default async function HowPage({ params }: PageProps<"/[locale]/how-it-wo
         </div>
         <div className="flex flex-col items-start justify-center gap-4 rounded-3xl border bg-card p-6 sm:p-8">
           <h2 className="text-2xl font-bold">{h.cta.title}</h2>
-          <p className="text-muted-foreground">{h.cta.body}</p>
           <Button asChild size="lg">
             <Link href={href(locale, "/app")}>
               {h.cta.button}

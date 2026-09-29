@@ -1,10 +1,11 @@
 "use client"
 
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
+import { ArrowLeftIcon, ArrowRightIcon, ChevronDownIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
 import { RateCurve } from "@/components/diagrams/rate-curve"
+import { InfoTip } from "@/components/ui/info-tip"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { accrue, available, borrowRate, poolUtilization, supplyRate, utilizationState } from "@/lib/demo/rates"
@@ -45,8 +46,6 @@ export function PoolView({ symbol }: { symbol: TokenSymbol }) {
     { label: p.stats.available, value: `${formatCompact(pool.queue.length ? 0 : available(pool), locale)} ${symbol}` },
     { label: p.stats.supplied, value: `${formatCompact(pool.supplied, locale)} ${symbol}` },
     { label: p.stats.borrowed, value: `${formatCompact(pool.borrowed, locale)} ${symbol}` },
-    { label: p.stats.lenders, value: formatNumber(pool.lenders, locale, 0) },
-    { label: p.stats.reserves, value: `${formatCompact(pool.reserves, locale)} ${symbol}` },
   ]
 
   return (
@@ -65,14 +64,14 @@ export function PoolView({ symbol }: { symbol: TokenSymbol }) {
             <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{t(p.title, { token: symbol })}</h1>
             <p className="text-sm text-muted-foreground">{TOKENS[symbol].name}</p>
           </div>
-          <div className="flex flex-col gap-1 sm:ml-auto sm:items-end">
-            <StateBadge state={state} label={states[state]} className="self-start sm:self-end" />
-            <p className="max-w-[40ch] text-xs text-muted-foreground sm:text-right">{stateHints[state]}</p>
+          <div className="flex items-center gap-0.5 sm:ml-auto">
+            <StateBadge state={state} label={states[state]} />
+            <InfoTip label={p.stateInfo}>{stateHints[state]}</InfoTip>
           </div>
         </header>
       </div>
 
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-3 lg:grid-cols-6">
         {stats.map((s) => (
           <div key={s.label} className="bg-card p-4">
             <dt className="text-xs font-semibold text-muted-foreground">{s.label}</dt>
@@ -86,10 +85,12 @@ export function PoolView({ symbol }: { symbol: TokenSymbol }) {
       {/* One grid so phones get curve → panel → history, while desktops keep the panel in a sticky right column. */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="curve-title" className="min-w-0 rounded-3xl border bg-card p-4 sm:p-6 lg:col-start-1">
-          <h2 id="curve-title" className="text-lg font-bold">
-            {p.curveTitle}
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{p.curveBody}</p>
+          <div className="flex items-center gap-1">
+            <h2 id="curve-title" className="text-lg font-bold">
+              {p.curveTitle}
+            </h2>
+            <InfoTip label={p.curveInfo}>{p.curveBody}</InfoTip>
+          </div>
           <RateCurve
             className="mt-4"
             model={pool.model}
@@ -170,16 +171,21 @@ export function PoolView({ symbol }: { symbol: TokenSymbol }) {
               <p className="mt-3 text-sm text-muted-foreground">{t(p.share.none, { share: shareSymbol(symbol) })}</p>
             )}
           </section>
-          <section aria-labelledby="params-title" className="rounded-3xl border bg-card p-4 sm:p-6">
-            <h2 id="params-title" className="text-lg font-bold">
-              {p.params.title}
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">{p.params.body}</p>
-            <ParamList model={pool.model} />
-            <Link href={howHref} className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-primary-ink underline underline-offset-4">
-              {p.params.playground}
-              <ArrowRightIcon className="size-4" aria-hidden="true" />
-            </Link>
+          {/* Governance mechanics: folded until asked for. */}
+          <section aria-labelledby="params-title" className="self-start rounded-3xl border bg-card px-4 py-2 sm:px-6 sm:py-3">
+            <details className="group">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+                <h2 id="params-title" className="text-lg font-bold">
+                  {p.params.title}
+                </h2>
+                <ChevronDownIcon className="size-5 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" aria-hidden="true" />
+              </summary>
+              <ParamList model={pool.model} />
+              <Link href={howHref} className="mt-1 mb-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-primary-ink underline underline-offset-4">
+                {p.params.playground}
+                <ArrowRightIcon className="size-4" aria-hidden="true" />
+              </Link>
+            </details>
           </section>
         </div>
       </div>

@@ -17,6 +17,7 @@ import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { InfoTip } from "@/components/ui/info-tip"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
@@ -25,12 +26,11 @@ import { accrue, available, poolUtilization, supplyRate, utilizationState } from
 import { actions, useDemo, useNow } from "@/lib/demo/store"
 import { shareSymbol, TOKEN_LIST, TOKENS } from "@/lib/demo/tokens"
 import type { ActivityKind, DemoState, TokenSymbol } from "@/lib/demo/types"
-import { formatCompact, formatDate, formatDateTime, formatPercent, formatShortDate, formatToken, formatUsd, shortHash } from "@/lib/format"
+import { formatCompact, formatDateTime, formatPercent, formatShortDate, formatToken, formatUsd } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 import { Amount } from "./amount"
 import { useAppCopy } from "./app-provider"
-import { Disclaimer } from "./disclaimer"
 import { SeriesChart } from "./series-chart"
 import { StateBadge } from "./state-badge"
 import { TokenMark } from "./token-mark"
@@ -46,16 +46,13 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col gap-10">
-      <header>
-        <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{d.title}</h1>
-        <p className="mt-2 max-w-[60ch] text-muted-foreground">{d.intro}</p>
-      </header>
+      <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{d.title}</h1>
 
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Tile label={d.tiles.supplied} value={formatUsd(e.valueUsd, locale)} />
-        <Tile label={d.tiles.earned} value={`+${formatUsd(e.earnedUsd, locale)}`} hint={d.tilesHint.earned} accent />
-        <Tile label={d.tiles.apy} value={formatPercent(e.blendedApy, locale)} hint={d.tilesHint.apy} />
-        <Tile label={d.tiles.queued} value={formatUsd(e.queuedUsd, locale)} hint={e.queuedUsd > 0 ? undefined : d.tilesHint.queuedNone} />
+        <Tile label={d.tiles.earned} value={`+${formatUsd(e.earnedUsd, locale)}`} accent />
+        <Tile label={d.tiles.apy} value={formatPercent(e.blendedApy, locale)} />
+        <Tile label={d.tiles.queued} value={formatUsd(e.queuedUsd, locale)} />
       </dl>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
@@ -75,12 +72,11 @@ export function Dashboard() {
   )
 }
 
-function Tile({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
+function Tile({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="rounded-2xl border bg-card p-4">
       <dt className="text-xs font-semibold text-muted-foreground">{label}</dt>
       <dd className={cn("mt-1 font-mono text-xl font-bold tabular-nums sm:text-2xl", accent && "text-success")}>{value}</dd>
-      {hint ? <dd className="mt-0.5 text-xs text-muted-foreground">{hint}</dd> : null}
     </div>
   )
 }
@@ -107,17 +103,14 @@ function EarningsCard({ demo, now, earnedUsd }: { demo: DemoState; now: number; 
   return (
     <Card title={c.title} id="earnings-title">
       {demo.activity.some((a) => a.kind === "supply") ? (
-        <>
-          <SeriesChart
-            data={data}
-            seriesName={c.earned}
-            ariaLabel={`${c.label}: ${formatUsd(earnedUsd, locale)}`}
-            formatX={(ts) => formatShortDate(ts, locale)}
-            formatY={(v) => formatUsd(v, locale, true)}
-            formatTooltip={(v) => formatUsd(v, locale)}
-          />
-          <p className="mt-3 text-xs text-muted-foreground">{c.skipHint}</p>
-        </>
+        <SeriesChart
+          data={data}
+          seriesName={c.earned}
+          ariaLabel={`${c.label}: ${formatUsd(earnedUsd, locale)}`}
+          formatX={(ts) => formatShortDate(ts, locale)}
+          formatY={(v) => formatUsd(v, locale, true)}
+          formatTooltip={(v) => formatUsd(v, locale)}
+        />
       ) : (
         <Empty icon={InboxIcon} text={c.empty} />
       )}
@@ -136,7 +129,6 @@ function Empty({ icon: Icon, text }: { icon: typeof InboxIcon; text: string }) {
 
 function Positions({ perPool }: { perPool: ReturnType<typeof earnings>["perPool"] }) {
   const { app, locale } = useAppCopy()
-  const demo = useDemo()
   const p = app.dashboard.positions
   const rows = perPool.filter((x) => x.shares > 1e-9)
   return (
@@ -146,7 +138,6 @@ function Positions({ perPool }: { perPool: ReturnType<typeof earnings>["perPool"
       ) : (
         <ul className="flex flex-col divide-y">
           {rows.map((r) => {
-            const since = demo?.positions.find((x) => x.symbol === r.symbol)?.since
             return (
               <li key={r.symbol} className="flex flex-wrap items-center gap-x-4 gap-y-3 py-4 first:pt-0 last:pb-0">
                 <div className="flex min-w-0 flex-1 basis-48 items-center gap-3">
@@ -154,7 +145,6 @@ function Positions({ perPool }: { perPool: ReturnType<typeof earnings>["perPool"
                   <div className="min-w-0">
                     <p className="font-bold">{r.symbol}</p>
                     <Amount value={r.shares} symbol={r.symbol} locale={locale} label={shareSymbol(r.symbol)} className="text-xs text-muted-foreground" />
-                    {since ? <p className="text-xs text-muted-foreground">{t(p.since, { date: formatDate(since, locale) })}</p> : null}
                   </div>
                 </div>
                 <dl className="grid flex-1 basis-64 grid-cols-3 gap-3 text-sm">
@@ -233,7 +223,7 @@ export function QueueList({ demo, now, only }: { demo: DemoState; now: number; o
 }
 
 function QueueCard({ symbol, entry, pos, ahead, amount }: { symbol: TokenSymbol; entry: { id: string; requestedAt: string }; pos: number; ahead: number; amount: number }) {
-  const { app, locale, disclaimer } = useAppCopy()
+  const { app, locale } = useAppCopy()
   const q = app.queue
   const tx = useTx()
   const cancel = () =>
@@ -250,16 +240,22 @@ function QueueCard({ symbol, entry, pos, ahead, amount }: { symbol: TokenSymbol;
         (hash) => actions.cancelQueued(symbol, entry.id, hash)
       )
       .then((r) => {
-        if (r.ok) toast.success(app.toasts.cancelled, { description: t(app.toasts.cancelledBody, { amount: formatToken(amount, symbol, locale) }) })
+        if (r.ok) toast.success(app.toasts.cancelled)
       })
 
   return (
     <section aria-labelledby={`q-${entry.id}`} className="rounded-3xl border-2 border-dashed border-warning/60 bg-card p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3">
-        <h2 id={`q-${entry.id}`} className="flex items-center gap-2 text-lg font-bold">
-          <HourglassIcon className="size-5 text-warning" aria-hidden="true" />
-          {q.title}
-        </h2>
+        <div className="flex items-center gap-1">
+          <h2 id={`q-${entry.id}`} className="flex items-center gap-2 text-lg font-bold">
+            <HourglassIcon className="size-5 text-warning" aria-hidden="true" />
+            {q.title}
+          </h2>
+          <InfoTip label={q.info}>
+            <p>{q.body}</p>
+            <p className="mt-2 text-muted-foreground">{q.tip}</p>
+          </InfoTip>
+        </div>
         <span className="rounded-full border px-2.5 py-0.5 text-xs font-bold">{t(q.position, { n: pos + 1 })}</span>
       </div>
       <p className="mt-3 font-mono text-2xl font-bold tabular-nums">{formatToken(amount, symbol, locale)}</p>
@@ -267,15 +263,12 @@ function QueueCard({ symbol, entry, pos, ahead, amount }: { symbol: TokenSymbol;
         {t(q.requested, { date: formatDateTime(entry.requestedAt, locale) })}
         {ahead > 0 ? <> · {t(q.ahead, { amount: formatToken(ahead, symbol, locale) })}</> : null}
       </p>
-      <p className="mt-3 text-sm text-muted-foreground">{q.body}</p>
-      <p className="mt-2 text-xs font-semibold text-muted-foreground">{q.tip}</p>
       <div className="mt-4 flex flex-col gap-3">
         <Button variant="outline" size="sm" onClick={cancel} disabled={tx.busy} className="self-start">
           <CircleSlashIcon aria-hidden="true" />
           {q.cancelLong}
         </Button>
         <TxFeedback state={tx.state} onRetry={cancel} onDismiss={tx.reset} />
-        <Disclaimer text={disclaimer} />
       </div>
     </section>
   )
@@ -304,7 +297,6 @@ function Markets({ demo, now }: { demo: DemoState; now: number }) {
       <h2 id="markets-title" className="text-2xl font-bold">
         {m.title}
       </h2>
-      <p className="mt-1 text-sm text-muted-foreground">{m.intro}</p>
 
       {/* Phones: one card per pool */}
       <ul className="mt-4 flex flex-col gap-3 md:hidden">
@@ -413,7 +405,7 @@ function ActivityLog({ demo }: { demo: DemoState }) {
   const { app, locale } = useAppCopy()
   const a = app.activity
   const [all, setAll] = useState(false)
-  const items = all ? demo.activity : demo.activity.slice(0, 6)
+  const items = all ? demo.activity : demo.activity.slice(0, 5)
   return (
     <Card title={a.title} id="activity-title">
       {demo.activity.length === 0 ? (
@@ -433,8 +425,8 @@ function ActivityLog({ demo }: { demo: DemoState }) {
                     <span className="block font-semibold">
                       {a.kinds[item.kind]} {item.kind === "approve" ? item.symbol : null}
                     </span>
-                    <span className="block text-xs text-muted-foreground">
-                      {formatDateTime(item.at, locale)} · <span className="font-mono" title={item.hash}>{t(a.tx, { hash: shortHash(item.hash) })}</span>
+                    <span className="block text-xs text-muted-foreground" title={t(a.tx, { hash: item.hash })}>
+                      {formatDateTime(item.at, locale)}
                     </span>
                   </span>
                   {item.amount > 0 ? (
@@ -447,7 +439,7 @@ function ActivityLog({ demo }: { demo: DemoState }) {
               )
             })}
           </ol>
-          {demo.activity.length > 6 ? (
+          {demo.activity.length > 5 ? (
             <Button variant="link" className="mt-3" onClick={() => setAll((v) => !v)}>
               {all ? a.showLess : a.showAll}
             </Button>

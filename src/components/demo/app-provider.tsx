@@ -18,7 +18,6 @@ export interface AppCopy {
   curve: Dictionary["common"]["curve"]
   howHref: string
   disclaimer: string
-  demoBadge: string
 }
 
 const AppContext = createContext<AppCopy | null>(null)

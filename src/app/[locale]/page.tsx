@@ -1,4 +1,4 @@
-import { ArrowRightIcon, LightbulbIcon, ListOrderedIcon, ScanEyeIcon } from "lucide-react"
+import { ArrowRightIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
@@ -27,7 +27,6 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
   return pageMetadata(locale, "/", null, getDictionary(locale).meta.description)
 }
 
-const BENEFIT_ICONS = [LightbulbIcon, ScanEyeIcon, ListOrderedIcon]
 const PHOTOS = [lectureImg, devsImg, studyImg]
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
@@ -63,8 +62,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         />
         <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pt-12 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 lg:pt-20 lg:pb-24">
           <div>
-            <p className="eyebrow text-primary-ink">{h.eyebrow}</p>
-            <h1 id="hero-title" className="mt-4 text-[2.25rem] leading-[1.08] font-extrabold tracking-display sm:text-5xl lg:text-[3.75rem]">
+            <h1 id="hero-title" className="text-[2.25rem] leading-[1.08] font-extrabold tracking-display sm:text-5xl lg:text-[3.75rem]">
               {h.title}
             </h1>
             <p className="mt-5 max-w-[34rem] text-lg text-muted-foreground sm:text-xl">{h.sub}</p>
@@ -79,7 +77,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                 <Link href={href(locale, "/how-it-works")}>{h.ctaSecondary}</Link>
               </Button>
             </div>
-            <p className="mt-6 text-xs text-muted-foreground">{c.disclaimer}</p>
           </div>
           <HeroLive
             locale={locale}
@@ -99,19 +96,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <section aria-labelledby="flow-title" className="border-y bg-secondary/50">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-center lg:gap-16 lg:py-20">
           <div>
-            <p className="eyebrow text-primary-ink">{h.flow.eyebrow}</p>
-            <h2 id="flow-title" className="mt-3 text-3xl font-bold tracking-display sm:text-[2rem]">
+            <h2 id="flow-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
               {h.flow.title}
             </h2>
-            <p className="mt-4 max-w-[60ch] text-muted-foreground">{h.flow.body}</p>
             <ol className="mt-8 grid gap-5 sm:grid-cols-2">
               {h.flow.steps.map((step, i) => (
                 <li key={step.title} className="flex gap-3">
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full border-[1.5px] border-primary text-sm font-extrabold">{i + 1}</span>
-                  <div>
-                    <h3 className="font-bold">{step.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{step.body}</p>
-                  </div>
+                  <h3 className="self-center font-bold">{step.title}</h3>
                 </li>
               ))}
             </ol>
@@ -120,31 +112,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      {/* Benefits */}
-      <section aria-labelledby="benefits-title" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
-        <h2 id="benefits-title" className="max-w-2xl text-3xl font-bold tracking-display sm:text-[2rem]">
-          {h.benefits.title}
-        </h2>
-        <ul className="mt-10 grid gap-8 md:grid-cols-3 md:gap-10">
-          {h.benefits.items.map((item, i) => {
-            const Icon = BENEFIT_ICONS[i] ?? LightbulbIcon
-            return (
-              <li key={item.title}>
-                <Icon className="size-7 text-primary" strokeWidth={1.75} aria-hidden="true" />
-                <h3 className="mt-4 text-xl font-bold">{item.title}</h3>
-                <p className="mt-2 text-muted-foreground">{item.body}</p>
-              </li>
-            )
-          })}
-        </ul>
-      </section>
-
-      <SectionDivider />
-
       {/* Three things to watch */}
       <section aria-labelledby="watch-title" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
-        <p className="eyebrow text-primary-ink">{h.watch.eyebrow}</p>
-        <h2 id="watch-title" className="mt-3 text-3xl font-bold tracking-display sm:text-[2rem]">
+        <h2 id="watch-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
           {h.watch.title}
         </h2>
         <ul className="mt-10 grid gap-4 md:grid-cols-3">
@@ -193,10 +163,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <p className="mt-2 text-muted-foreground">{h.watch.items[2]!.body}</p>
           </li>
         </ul>
-        <Link href={href(locale, "/how-it-works")} className="mt-8 inline-flex min-h-11 items-center gap-1.5 font-bold text-primary-ink underline underline-offset-4">
-          {h.watch.link}
-          <ArrowRightIcon className="size-4" aria-hidden="true" />
-        </Link>
       </section>
 
       {/* Who it's for */}
@@ -238,12 +204,9 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* Closing */}
       <section aria-labelledby="closing-title" className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center md:justify-between lg:py-20">
-        <div>
-          <h2 id="closing-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
-            {h.closing.title}
-          </h2>
-          <p className="mt-2 text-muted-foreground">{h.closing.body}</p>
-        </div>
+        <h2 id="closing-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
+          {h.closing.title}
+        </h2>
         <Button asChild size="lg" className="shrink-0">
           <Link href={href(locale, "/app")}>
             {h.closing.cta}
