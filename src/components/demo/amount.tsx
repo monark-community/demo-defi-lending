@@ -4,7 +4,7 @@ import { TOKENS, usdValue } from "@/lib/demo/tokens"
 import type { TokenSymbol } from "@/lib/demo/types"
 import { AMOUNT_DECIMALS, toUnits } from "@/lib/format"
 
-/** Token amounts always go through the registry TokenAmount component (DeFi family convention). */
+/** Token amounts always go through the registry TokenAmount component (DeFi family convention), set in mono like the other figures. */
 export function Amount({
   value,
   symbol,
@@ -33,6 +33,7 @@ export function Amount({
       symbol={showSymbol ? (label ?? symbol) : undefined}
       locale={intlLocale[locale]}
       usdValue={usd ? usdValue(value, symbol) : undefined}
+      mono
       className={className}
     />
   )
