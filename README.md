@@ -11,7 +11,7 @@ It is the **lender's view** of the Monark DeFi demos (alongside Fluidswap, Borro
 
 ## Run it locally
 
-Requirements: Node 22 and pnpm 10.
+Requirements: Node 24 and pnpm 10.
 
 ```sh
 pnpm install
@@ -88,4 +88,4 @@ cream and espresso tokens from the brand guidelines.
 ## Deploy to Vercel
 
 Import the repository in Vercel and keep the defaults (framework: Next.js, install `pnpm install`, build `pnpm build`).
-No `vercel.json` and no environment variables are required. Node 22 is pinned in `package.json` `engines`.
+No `vercel.json` and no environment variables are required. Node 24 is pinned in `package.json` `engines`.
