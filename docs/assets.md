@@ -18,11 +18,11 @@ Copied from `lovable-migration/brand-refs/` and the monark.io website repo, unmo
 
 | File | Use |
 |-|-|
-| `public/brand/monark-mark.svg` | Header pairing, wallet prompt, connect gate, OG image; also `src/app/icon.svg` (favicon) |
-| `public/brand/monark-horizontal-{light,dark}.svg` | Footer Monark band |
+| `public/brand/monark-mark.svg` | OG image; also `src/app/icon.svg` (favicon) |
 | `public/brand/monark-vertical-{light,dark}.svg` | 404 page |
 | `public/brand/monark-mesh.svg` | Home hero, once, cropped at low opacity |
-| `public/brand/socials/*.svg` | Footer social links (recoloured through a CSS mask) |
+
+The header mark, the wallet prompt and connect-gate mark, the footer's horizontal logo and the social icons come inline from @monark/ui (`site-brand`'s `MonarkMark` and `MonarkLogo`, `site-footer`'s `MONARK_SOCIALS`).
 
 ## Drawn in code
 

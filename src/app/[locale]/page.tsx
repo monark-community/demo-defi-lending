@@ -8,7 +8,7 @@ import { QueueBar } from "@/components/diagrams/queue-bar"
 import { RateCurve } from "@/components/diagrams/rate-curve"
 import { YieldFlow } from "@/components/diagrams/yield-flow"
 import { HeroLive } from "@/components/home/hero-live"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { href, isLocale } from "@/i18n/config"
@@ -200,7 +200,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </Accordion>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       {/* Closing */}
       <section aria-labelledby="closing-title" className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center md:justify-between lg:py-20">

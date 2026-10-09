@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 
 import { QueueBar } from "@/components/diagrams/queue-bar"
 import { Playground } from "@/components/how/playground"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Button } from "@/components/ui/button"
 import { DEFI_FAMILY, href, isLocale } from "@/i18n/config"
 import { getDictionary, t } from "@/i18n"
@@ -56,7 +56,7 @@ export default async function HowPage({ params }: PageProps<"/[locale]/how-it-wo
         </div>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       <section aria-labelledby="shares-title" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center">
         <div>
