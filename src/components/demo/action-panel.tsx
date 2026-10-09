@@ -5,6 +5,8 @@ import { useEffect, useId, useState } from "react"
 
 import { QueueBar } from "@/components/diagrams/queue-bar"
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyDescription } from "@/components/ui/empty"
+import { FieldError } from "@/components/ui/field-error"
 import { InfoTip } from "@/components/ui/info-tip"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -111,9 +113,7 @@ function AmountField({
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
-        <Label htmlFor={id} className="text-sm font-bold">
-          {app.panel.amount}
-        </Label>
+        <Label htmlFor={id}>{app.panel.amount}</Label>
         <span className="text-xs text-muted-foreground">{balanceLine}</span>
       </div>
       <div className="relative mt-2">
@@ -136,9 +136,9 @@ function AmountField({
           </Button>
         </div>
       </div>
-      <p id={errId} role={field.visibleError ? "alert" : undefined} className="mt-1.5 min-h-5 text-sm font-semibold text-destructive">
+      <FieldError id={errId} reserveSpace className="mt-1.5">
         {field.visibleError}
-      </p>
+      </FieldError>
     </div>
   )
 }
@@ -250,7 +250,11 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
       }}
       className="flex flex-col gap-4"
     >
-      {balance <= 0 ? <p className="rounded-2xl border border-dashed p-3 text-sm text-muted-foreground">{t(pn.noWallet, { token: symbol })}</p> : null}
+      {balance <= 0 ? (
+        <Empty size="sm" align="start">
+          <EmptyDescription>{t(pn.noWallet, { token: symbol })}</EmptyDescription>
+        </Empty>
+      ) : null}
       <AmountField
         id={`${id}-supply`}
         symbol={symbol}
@@ -414,7 +418,11 @@ function WithdrawForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (
   }
 
   if (holding <= 0) {
-    return <p className="rounded-2xl border border-dashed p-4 text-sm text-muted-foreground">{t(pn.noPosition, { token: symbol })}</p>
+    return (
+      <Empty size="sm" align="start">
+        <EmptyDescription>{t(pn.noPosition, { token: symbol })}</EmptyDescription>
+      </Empty>
+    )
   }
 
   const freeNow = pool.queue.length ? 0 : available(pool)

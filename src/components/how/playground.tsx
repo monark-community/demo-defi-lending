@@ -6,6 +6,7 @@ import { useId, useState } from "react"
 import { RateCurve } from "@/components/diagrams/rate-curve"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import type { Dictionary } from "@/i18n"
 import type { Locale } from "@/i18n/config"
 import { t } from "@/i18n/t"
@@ -21,6 +22,8 @@ const PRESETS: Record<"stable" | "volatile" | "tight", Params> = {
   volatile: { base: 0, slope1: 0.04, slope2: 1, kink: 0.45, reserveFactor: 0.2, u: 0.3 },
   tight: { base: 0, slope1: 0.07, slope2: 0.3, kink: 0.8, reserveFactor: 0.2, u: 0.96 },
 }
+
+const isPreset = (v: string): v is keyof typeof PRESETS => v in PRESETS
 
 const EXAMPLE = 10_000
 
@@ -75,22 +78,26 @@ export function Playground({ locale, copy, curve }: { locale: Locale; copy: Dict
       <div className="flex min-w-0 flex-col gap-5">
         <div>
           <p className="text-sm font-bold">{copy.presets}</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {(Object.keys(PRESETS) as (keyof typeof PRESETS)[]).map((k) => (
-              <Button
-                key={k}
-                size="sm"
-                variant="outline"
-                aria-pressed={preset === k}
-                className={cn(preset === k && "border-foreground bg-secondary")}
-                onClick={() => {
-                  setP(PRESETS[k])
-                  setPreset(k)
-                }}
-              >
-                {copy.presetItems[k]}
-              </Button>
-            ))}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <ToggleGroup
+              type="single"
+              variant="chip"
+              size="sm"
+              aria-label={copy.presets}
+              value={preset ?? ""}
+              onValueChange={(v) => {
+                // Clicking the active preset again keeps it selected.
+                if (!isPreset(v)) return
+                setP(PRESETS[v])
+                setPreset(v)
+              }}
+            >
+              {(Object.keys(PRESETS) as (keyof typeof PRESETS)[]).map((k) => (
+                <ToggleGroupItem key={k} value={k}>
+                  {copy.presetItems[k]}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
             <Button
               size="sm"
               variant="ghost"
