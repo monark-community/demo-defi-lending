@@ -9,6 +9,7 @@ import { InfoTip } from "@/components/ui/info-tip"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TxFeedback } from "@/components/ui/tx-feedback"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
 import { planWithdrawal } from "@/lib/demo/ops"
@@ -19,8 +20,7 @@ import type { TokenSymbol } from "@/lib/demo/types"
 import { formatAmount, formatPercent, formatToken } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
-import { useAppCopy } from "./app-provider"
-import { TxFeedback } from "./tx-feedback"
+import { txFeedbackProps, useAppCopy } from "./app-provider"
 
 type Mode = "supply" | "withdraw"
 type Preview = { u: number; kind: Mode } | null
@@ -225,7 +225,7 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
           <CheckCircle2Icon className="mt-0.5 size-5 shrink-0 text-success" aria-hidden="true" />
           {pn.supplyConfirmed}
         </p>
-        <TxFeedback state={tx.state} confirmedLabel={t(app.toasts.supplied, { amount: formatToken(done.amount, symbol, locale) })} />
+        <TxFeedback {...txFeedbackProps(app.tx, tx.state)} confirmedLabel={t(app.toasts.supplied, { amount: formatToken(done.amount, symbol, locale) })} />
         <Button
           variant="outline"
           className="self-start"
@@ -287,7 +287,7 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
             <Button type="button" onClick={approve} disabled={busy} className="self-start">
               {t(pn.approveButton, { token: symbol })}
             </Button>
-            <TxFeedback state={approveTx.state} onRetry={approve} onDismiss={approveTx.reset} />
+            <TxFeedback {...txFeedbackProps(app.tx, approveTx.state)} onRetry={approve} onDismiss={approveTx.reset} />
           </Step>
           <Step n={2} done={false} disabled title={t(pn.supplyStep, { amount: amount ? formatToken(amount, symbol, locale) : symbol })}>
             <Button type="button" variant="outline" disabled className="self-start">
@@ -306,7 +306,7 @@ function SupplyForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (p:
           <Button type="submit" size="lg" disabled={busy} className="w-full">
             {amount ? t(pn.supplyAmountButton, { amount: formatToken(amount, symbol, locale) }) : pn.supplyButton}
           </Button>
-          <TxFeedback state={tx.state} onRetry={supply} onDismiss={tx.reset} />
+          <TxFeedback {...txFeedbackProps(app.tx, tx.state)} onRetry={supply} onDismiss={tx.reset} />
         </div>
       )}
     </form>
@@ -398,7 +398,7 @@ function WithdrawForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (
           <CheckCircle2Icon className="mt-0.5 size-5 shrink-0 text-success" aria-hidden="true" />
           {done.queued > 0 ? pn.withdrawQueued : pn.withdrawConfirmed}
         </p>
-        <TxFeedback state={tx.state} />
+        <TxFeedback {...txFeedbackProps(app.tx, tx.state)} />
         <Button
           variant="outline"
           className="self-start"
@@ -478,7 +478,7 @@ function WithdrawForm({ symbol, onPreview }: { symbol: TokenSymbol; onPreview: (
       <Button type="submit" size="lg" disabled={tx.busy} className="w-full">
         {amount ? t(pn.withdrawAmountButton, { amount: formatToken(amount, symbol, locale) }) : pn.withdrawButton}
       </Button>
-      <TxFeedback state={tx.state} onRetry={withdraw} onDismiss={tx.reset} />
+      <TxFeedback {...txFeedbackProps(app.tx, tx.state)} onRetry={withdraw} onDismiss={tx.reset} />
     </form>
   )
 }

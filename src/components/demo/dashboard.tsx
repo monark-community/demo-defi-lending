@@ -18,6 +18,7 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { InfoTip } from "@/components/ui/info-tip"
+import { TxFeedback } from "@/components/ui/tx-feedback"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
@@ -30,11 +31,10 @@ import { formatCompact, formatDateTime, formatPercent, formatShortDate, formatTo
 import { cn } from "@/lib/utils"
 
 import { Amount } from "./amount"
-import { useAppCopy } from "./app-provider"
+import { txFeedbackProps, useAppCopy } from "./app-provider"
 import { SeriesChart } from "./series-chart"
 import { StateBadge } from "./state-badge"
 import { TokenMark } from "./token-mark"
-import { TxFeedback } from "./tx-feedback"
 
 export function Dashboard() {
   const demo = useDemo()
@@ -268,7 +268,7 @@ function QueueCard({ symbol, entry, pos, ahead, amount }: { symbol: TokenSymbol;
           <CircleSlashIcon aria-hidden="true" />
           {q.cancelLong}
         </Button>
-        <TxFeedback state={tx.state} onRetry={cancel} onDismiss={tx.reset} />
+        <TxFeedback {...txFeedbackProps(app.tx, tx.state)} onRetry={cancel} onDismiss={tx.reset} />
       </div>
     </section>
   )
