@@ -8,9 +8,10 @@ import { QueueBar } from "@/components/diagrams/queue-bar"
 import { RateCurve } from "@/components/diagrams/rate-curve"
 import { YieldFlow } from "@/components/diagrams/yield-flow"
 import { HeroLive } from "@/components/home/hero-live"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
+import { SectionHeading } from "@/components/ui/section-heading"
 import { href, isLocale } from "@/i18n/config"
 import { getDictionary } from "@/i18n"
 import { seedFacts } from "@/lib/demo/facts"
@@ -62,10 +63,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         />
         <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pt-12 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 lg:pt-20 lg:pb-24">
           <div>
-            <h1 id="hero-title" className="text-[2.25rem] leading-[1.08] font-extrabold tracking-display sm:text-5xl lg:text-[3.75rem]">
-              {h.title}
-            </h1>
-            <p className="mt-5 max-w-[34rem] text-lg text-muted-foreground sm:text-xl">{h.sub}</p>
+            <SectionHeading as="h1" size="lg" titleId="hero-title" title={h.title} lead={h.sub} />
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button asChild size="lg">
                 <Link href={href(locale, "/app")}>
@@ -96,9 +94,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <section aria-labelledby="flow-title" className="border-y bg-secondary/50">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-center lg:gap-16 lg:py-20">
           <div>
-            <h2 id="flow-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
-              {h.flow.title}
-            </h2>
+            <SectionHeading titleId="flow-title" title={h.flow.title} />
             <ol className="mt-8 grid gap-5 sm:grid-cols-2">
               {h.flow.steps.map((step, i) => (
                 <li key={step.title} className="flex gap-3">
@@ -114,9 +110,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* Three things to watch */}
       <section aria-labelledby="watch-title" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
-        <h2 id="watch-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
-          {h.watch.title}
-        </h2>
+        <SectionHeading titleId="watch-title" title={h.watch.title} />
         <ul className="mt-10 grid gap-4 md:grid-cols-3">
           <li className="flex flex-col rounded-3xl border bg-card p-6">
             <div className="rounded-2xl border bg-background p-2">
@@ -168,9 +162,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       {/* Who it's for */}
       <section aria-labelledby="who-title" className="border-t bg-secondary/40">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
-          <h2 id="who-title" className="max-w-2xl text-3xl font-bold tracking-display sm:text-[2rem]">
-            {h.who.title}
-          </h2>
+          <SectionHeading titleId="who-title" title={h.who.title} className="max-w-2xl" />
           <ul className="mt-10 grid gap-6 md:grid-cols-3">
             {h.who.items.map((item, i) => (
               <li key={item.title}>
@@ -187,32 +179,33 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
       {/* FAQ */}
       <section aria-labelledby="faq-title" className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6 lg:py-20">
-        <h2 id="faq-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
-          {h.faq.title}
-        </h2>
-        <Accordion type="single" collapsible className="mt-8 rounded-3xl border bg-card px-5">
+        <SectionHeading titleId="faq-title" title={h.faq.title} />
+        <Accordion type="single" collapsible variant="plus" className="mt-8 rounded-3xl border bg-card px-5">
           {h.faq.items.map((item, i) => (
             <AccordionItem key={item.q} value={`q${i}`}>
-              <AccordionTrigger className="py-5 text-base font-bold">{item.q}</AccordionTrigger>
-              <AccordionContent className="text-base text-muted-foreground">{item.a}</AccordionContent>
+              <AccordionTrigger>{item.q}</AccordionTrigger>
+              <AccordionContent>{item.a}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       {/* Closing */}
-      <section aria-labelledby="closing-title" className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center md:justify-between lg:py-20">
-        <h2 id="closing-title" className="text-3xl font-bold tracking-display sm:text-[2rem]">
-          {h.closing.title}
-        </h2>
-        <Button asChild size="lg" className="shrink-0">
-          <Link href={href(locale, "/app")}>
-            {h.closing.cta}
-            <ArrowRightIcon aria-hidden="true" />
-          </Link>
-        </Button>
+      <section aria-labelledby="closing-title" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+        <SectionHeading
+          titleId="closing-title"
+          title={h.closing.title}
+          action={
+            <Button asChild size="lg">
+              <Link href={href(locale, "/app")}>
+                {h.closing.cta}
+                <ArrowRightIcon aria-hidden="true" />
+              </Link>
+            </Button>
+          }
+        />
       </section>
     </>
   )

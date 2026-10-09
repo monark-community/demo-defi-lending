@@ -5,8 +5,9 @@ import { notFound } from "next/navigation"
 
 import { QueueBar } from "@/components/diagrams/queue-bar"
 import { Playground } from "@/components/how/playground"
-import { SectionDivider } from "@/components/site/section-divider"
+import { SectionDivider } from "@/components/ui/section-divider"
 import { Button } from "@/components/ui/button"
+import { SectionHeading } from "@/components/ui/section-heading"
 import { DEFI_FAMILY, href, isLocale } from "@/i18n/config"
 import { getDictionary, t } from "@/i18n"
 import { seedFacts } from "@/lib/demo/facts"
@@ -56,14 +57,11 @@ export default async function HowPage({ params }: PageProps<"/[locale]/how-it-wo
         </div>
       </section>
 
-      <SectionDivider />
+      <SectionDivider contained />
 
       <section aria-labelledby="shares-title" className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center">
         <div>
-          <h2 id="shares-title" className="text-3xl font-bold tracking-display">
-            {h.shares.title}
-          </h2>
-          <p className="mt-4 text-muted-foreground">{h.shares.body}</p>
+          <SectionHeading titleId="shares-title" title={h.shares.title} lead={h.shares.body} />
           <ol className="mt-6 flex flex-col gap-3">
             {[
               { label: t(s1!.label, { date: formatDate(f.firstSupply.at, locale) }), value: t(s1!.value, { amount: formatToken(f.firstSupply.amount, "tUSDC", locale), rate: formatNumber(f.firstSupply.index, locale, 4) }) },
@@ -103,12 +101,7 @@ export default async function HowPage({ params }: PageProps<"/[locale]/how-it-wo
 
       <section aria-labelledby="queue-title" className="border-y bg-secondary/50">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-center">
-          <div>
-            <h2 id="queue-title" className="text-3xl font-bold tracking-display">
-              {h.queue.title}
-            </h2>
-            <p className="mt-4 text-muted-foreground">{h.queue.body}</p>
-          </div>
+          <SectionHeading titleId="queue-title" title={h.queue.title} lead={h.queue.body} />
           <figure className="flex flex-col gap-5 rounded-3xl border bg-card p-5 sm:p-6">
             {[
               { label: h.queue.diagram.request, ratio: 0.72, filled: 0 },

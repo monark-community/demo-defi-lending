@@ -1,11 +1,12 @@
 "use client"
 
 import { Loader2Icon, WalletIcon, XCircleIcon } from "lucide-react"
-import Image from "next/image"
 import type { ReactNode } from "react"
 
+import { AppLoading } from "@/components/ui/app-loading"
 import { Button } from "@/components/ui/button"
 import { NetworkBadge } from "@/components/ui/network-badge"
+import { MonarkMark } from "@/components/ui/site-brand"
 import { useDemo, useStorageOk } from "@/lib/demo/store"
 import { NETWORK_NAME } from "@/lib/demo/tokens"
 import { connectWallet } from "@/lib/demo/wallet"
@@ -27,7 +28,7 @@ export function AppFrame({ children }: { children: ReactNode }) {
     <div className="flex flex-1 flex-col">
       <div className="border-b bg-secondary/40">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6">
-          <NetworkBadge name={NETWORK_NAME} variant="outline" icon={<span className="block size-full rounded-full bg-success" />} />
+          <NetworkBadge name={NETWORK_NAME} variant="outline" status="live" />
           <DemoDate />
           <div className="ml-auto">
             <DemoControls />
@@ -46,22 +47,6 @@ export function AppFrame({ children }: { children: ReactNode }) {
   )
 }
 
-export function AppLoading({ label }: { label: string }) {
-  return (
-    <div role="status" aria-live="polite" className="flex flex-col gap-4">
-      <span className="sr-only">{label}</span>
-      <div className="h-9 w-56 animate-pulse rounded-full bg-muted" />
-      <div className="grid gap-3 sm:grid-cols-4">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-24 animate-pulse rounded-2xl bg-muted" />
-        ))}
-      </div>
-      <div className="h-40 animate-pulse rounded-2xl bg-muted" />
-      <div className="h-40 animate-pulse rounded-2xl bg-muted" />
-    </div>
-  )
-}
-
 function ConnectGate() {
   const demo = useDemo()
   const { app } = useAppCopy()
@@ -71,7 +56,7 @@ function ConnectGate() {
 
   return (
     <section aria-labelledby="gate-title" className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center py-8 text-center">
-      <Image src="/brand/monark-mark.svg" alt="" width={56} height={56} unoptimized className="size-14" />
+      <MonarkMark className="size-14" />
       <h1 id="gate-title" className="mt-6 text-3xl font-extrabold tracking-display">
         {g.title}
       </h1>

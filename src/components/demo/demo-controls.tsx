@@ -1,13 +1,11 @@
 "use client"
 
-import { CalendarClockIcon, DropletIcon, FastForwardIcon, RotateCcwIcon, SlidersHorizontalIcon } from "lucide-react"
+import { CalendarClockIcon, DropletIcon, FastForwardIcon, SlidersHorizontalIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { DemoControls as RegistryDemoControls } from "@/components/ui/demo-controls"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
 import { randomHash } from "@/lib/demo/ids"
@@ -47,14 +45,16 @@ export function DemoDate() {
   )
 }
 
-/** Visible demo controls: time travel, test tokens, network speed, forced failure, and "Reset demo". */
+/**
+ * Visible demo controls: the registry DemoControls (slow network, forced
+ * failure, two-step reset) plus Yieldmine's time travel and test-token faucet.
+ */
 export function DemoControls() {
   const demo = useDemo()
   const copy = useAppCopy()
   const { app } = copy
   const c = app.controls
   const [open, setOpen] = useState(false)
-  const [confirming, setConfirming] = useState(false)
   const faucetTx = useTx()
   if (!demo) return null
 
@@ -77,115 +77,66 @@ export function DemoControls() {
   }
 
   return (
-    <Dialog
+    <RegistryDemoControls
       open={open}
-      onOpenChange={(o) => {
-        setOpen(o)
-        if (!o) setConfirming(false)
-      }}
-    >
-      <DialogTrigger asChild>
+      onOpenChange={setOpen}
+      trigger={
         <Button variant="outline" size="sm">
           <SlidersHorizontalIcon aria-hidden="true" />
           {c.open}
           {demo.settings.failNext || demo.settings.slow ? <span className="size-2 rounded-full bg-warning" aria-hidden="true" /> : null}
         </Button>
-      </DialogTrigger>
-      <DialogContent closeLabel={app.close} className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-extrabold">{c.title}</DialogTitle>
-          <DialogDescription className="sr-only">{c.timeHint}</DialogDescription>
-        </DialogHeader>
-
-        <section aria-labelledby="ctl-time" className="rounded-2xl border p-4">
-          <h3 id="ctl-time" className="flex items-center gap-2 text-sm font-bold">
-            <FastForwardIcon className="size-4 text-primary" aria-hidden="true" />
-            {c.time}
-          </h3>
-          <p className="mt-1 text-xs text-muted-foreground">{c.timeHint}</p>
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <Button variant="outline" size="sm" onClick={() => skip(1)}>
-              {c.skip1}
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => skip(7)}>
-              {c.skip7}
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => skip(30)}>
-              {c.skip30}
-            </Button>
-          </div>
-        </section>
-
-        <div className="flex flex-col divide-y rounded-2xl border">
-          <div className="flex items-start justify-between gap-4 p-4">
-            <div className="contents">
-              <div>
-                <p className="text-sm font-bold">{c.faucet}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{c.faucetHint}</p>
-              </div>
-              <Button variant="outline" size="sm" className="shrink-0" onClick={() => void getTokens()} disabled={faucetTx.busy}>
-                <DropletIcon aria-hidden="true" />
-                {c.faucet}
-              </Button>
-            </div>
-          </div>
-          <div className="flex items-start justify-between gap-4 p-4">
-            <div>
-              <Label htmlFor="ctl-slow" className="text-sm font-bold">
-                {c.slow}
-              </Label>
-              <p className="mt-1 text-xs text-muted-foreground">{c.slowHint}</p>
-            </div>
-            <Switch id="ctl-slow" checked={demo.settings.slow} onCheckedChange={(v) => setSettings({ slow: v })} />
-          </div>
-          <div className="flex items-start justify-between gap-4 p-4">
-            <div>
-              <Label htmlFor="ctl-fail" className="text-sm font-bold">
-                {c.failNext}
-              </Label>
-              <p className="mt-1 text-xs text-muted-foreground">{c.failNextHint}</p>
-            </div>
-            <Switch id="ctl-fail" checked={demo.settings.failNext} onCheckedChange={(v) => setSettings({ failNext: v })} />
-          </div>
+      }
+      slow={demo.settings.slow}
+      onSlowChange={(v) => setSettings({ slow: v })}
+      failNext={demo.settings.failNext}
+      onFailNextChange={(v) => setSettings({ failNext: v })}
+      onReset={() => {
+        resetDemo()
+        toast.success(c.resetDone)
+      }}
+      title={c.title}
+      openLabel={c.open}
+      slowLabel={c.slow}
+      slowHint={c.slowHint}
+      failNextLabel={c.failNext}
+      failNextHint={c.failNextHint}
+      resetLabel={c.reset}
+      resetHint={c.resetHint}
+      resetConfirmTitle={c.resetConfirm}
+      resetConfirmBody={c.resetConfirmBody}
+      resetConfirmLabel={c.resetDo}
+      cancelLabel={c.cancel}
+      closeLabel={app.close}
+    >
+      <section aria-labelledby="ctl-time" className="p-4">
+        <h3 id="ctl-time" className="flex items-center gap-2 text-sm font-bold">
+          <FastForwardIcon className="size-4 text-primary" aria-hidden="true" />
+          {c.time}
+        </h3>
+        <p className="mt-1 text-xs text-muted-foreground">{c.timeHint}</p>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <Button variant="outline" size="sm" onClick={() => skip(1)}>
+            {c.skip1}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => skip(7)}>
+            {c.skip7}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => skip(30)}>
+            {c.skip30}
+          </Button>
         </div>
-
-        <div className="rounded-2xl border p-4">
-          {!confirming ? (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs text-muted-foreground">{c.resetHint}</p>
-              <Button variant="destructive" size="sm" onClick={() => setConfirming(true)} className="shrink-0">
-                <RotateCcwIcon aria-hidden="true" />
-                {c.reset}
-              </Button>
-            </div>
-          ) : (
-            <div role="alertdialog" aria-labelledby="reset-q" className="flex flex-col gap-3">
-              <p id="reset-q" className="font-bold">
-                {c.resetConfirm}
-              </p>
-              <p className="text-xs text-muted-foreground">{c.resetConfirmBody}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  autoFocus
-                  onClick={() => {
-                    resetDemo()
-                    setConfirming(false)
-                    setOpen(false)
-                    toast.success(c.resetDone)
-                  }}
-                >
-                  {c.resetDo}
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>
-                  {c.cancel}
-                </Button>
-              </div>
-            </div>
-          )}
+      </section>
+      <div className="flex items-start justify-between gap-4 p-4">
+        <div>
+          <p className="text-sm font-bold">{c.faucet}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{c.faucetHint}</p>
         </div>
-      </DialogContent>
-    </Dialog>
+        <Button variant="outline" size="sm" className="shrink-0" onClick={() => void getTokens()} disabled={faucetTx.busy}>
+          <DropletIcon aria-hidden="true" />
+          {c.faucet}
+        </Button>
+      </div>
+    </RegistryDemoControls>
   )
 }

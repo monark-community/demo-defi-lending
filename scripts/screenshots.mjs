@@ -83,7 +83,7 @@ async function marketing(page, v) {
   }
   // Flow 5: the rate playground on a tight market
   await page.goto(`${BASE}/${v.locale}/how-it-works`, { waitUntil: "networkidle" })
-  await page.getByRole("button", { name: "Tight market" }).click()
+  await page.getByRole("radio", { name: "Tight market" }).click()
   await page.getByRole("heading", { name: "The rate model, hands on" }).scrollIntoViewIfNeeded()
   await shot(page, v, "flow5-playground-tight")
   if (v.w < 768) {

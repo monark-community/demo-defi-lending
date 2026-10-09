@@ -16,8 +16,12 @@ import Link from "next/link"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Empty, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import { InfoTip } from "@/components/ui/info-tip"
+import { Stat, StatGroup, StatLabel, StatValue } from "@/components/ui/stat"
+import { TxFeedback } from "@/components/ui/tx-feedback"
 import { href } from "@/i18n/config"
 import { t } from "@/i18n/t"
 import { useTx } from "@/lib/demo/chain"
@@ -30,11 +34,10 @@ import { formatCompact, formatDateTime, formatPercent, formatShortDate, formatTo
 import { cn } from "@/lib/utils"
 
 import { Amount } from "./amount"
-import { useAppCopy } from "./app-provider"
+import { txFeedbackProps, useAppCopy } from "./app-provider"
 import { SeriesChart } from "./series-chart"
 import { StateBadge } from "./state-badge"
 import { TokenMark } from "./token-mark"
-import { TxFeedback } from "./tx-feedback"
 
 export function Dashboard() {
   const demo = useDemo()
@@ -48,12 +51,12 @@ export function Dashboard() {
     <div className="flex flex-col gap-10">
       <h1 className="text-3xl font-extrabold tracking-display sm:text-4xl">{d.title}</h1>
 
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <StatGroup className="grid-cols-2">
         <Tile label={d.tiles.supplied} value={formatUsd(e.valueUsd, locale)} />
         <Tile label={d.tiles.earned} value={`+${formatUsd(e.earnedUsd, locale)}`} accent />
         <Tile label={d.tiles.apy} value={formatPercent(e.blendedApy, locale)} />
         <Tile label={d.tiles.queued} value={formatUsd(e.queuedUsd, locale)} />
-      </dl>
+      </StatGroup>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="flex min-w-0 flex-col gap-6">
@@ -74,10 +77,10 @@ export function Dashboard() {
 
 function Tile({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-2xl border bg-card p-4">
-      <dt className="text-xs font-semibold text-muted-foreground">{label}</dt>
-      <dd className={cn("mt-1 font-mono text-xl font-bold tabular-nums sm:text-2xl", accent && "text-success")}>{value}</dd>
-    </div>
+    <Stat tone={accent ? "success" : "default"}>
+      <StatLabel>{label}</StatLabel>
+      <StatValue>{value}</StatValue>
+    </Stat>
   )
 }
 
@@ -112,18 +115,20 @@ function EarningsCard({ demo, now, earnedUsd }: { demo: DemoState; now: number; 
           formatTooltip={(v) => formatUsd(v, locale)}
         />
       ) : (
-        <Empty icon={InboxIcon} text={c.empty} />
+        <NothingYet icon={InboxIcon} text={c.empty} />
       )}
     </Card>
   )
 }
 
-function Empty({ icon: Icon, text }: { icon: typeof InboxIcon; text: string }) {
+function NothingYet({ icon: Icon, text }: { icon: typeof InboxIcon; text: string }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
-      <Icon className="size-6" aria-hidden="true" />
-      <p className="max-w-[40ch]">{text}</p>
-    </div>
+    <Empty>
+      <EmptyMedia>
+        <Icon />
+      </EmptyMedia>
+      <EmptyDescription className="max-w-[40ch]">{text}</EmptyDescription>
+    </Empty>
   )
 }
 
@@ -134,7 +139,7 @@ function Positions({ perPool }: { perPool: ReturnType<typeof earnings>["perPool"
   return (
     <Card title={p.title} id="positions-title">
       {rows.length === 0 ? (
-        <Empty icon={InboxIcon} text={p.empty} />
+        <NothingYet icon={InboxIcon} text={p.empty} />
       ) : (
         <ul className="flex flex-col divide-y">
           {rows.map((r) => {
@@ -185,7 +190,7 @@ function WalletCard({ demo }: { demo: DemoState }) {
   return (
     <Card title={w.title} id="wallet-title" action={<WalletIcon className="size-5 text-muted-foreground" aria-hidden="true" />}>
       {items.length === 0 ? (
-        <Empty icon={WalletIcon} text={w.empty} />
+        <NothingYet icon={WalletIcon} text={w.empty} />
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((s) => (
@@ -256,7 +261,7 @@ function QueueCard({ symbol, entry, pos, ahead, amount }: { symbol: TokenSymbol;
             <p className="mt-2 text-muted-foreground">{q.tip}</p>
           </InfoTip>
         </div>
-        <span className="rounded-full border px-2.5 py-0.5 text-xs font-bold">{t(q.position, { n: pos + 1 })}</span>
+        <Badge variant="outline">{t(q.position, { n: pos + 1 })}</Badge>
       </div>
       <p className="mt-3 font-mono text-2xl font-bold tabular-nums">{formatToken(amount, symbol, locale)}</p>
       <p className="mt-1 text-xs text-muted-foreground">
@@ -268,7 +273,7 @@ function QueueCard({ symbol, entry, pos, ahead, amount }: { symbol: TokenSymbol;
           <CircleSlashIcon aria-hidden="true" />
           {q.cancelLong}
         </Button>
-        <TxFeedback state={tx.state} onRetry={cancel} onDismiss={tx.reset} />
+        <TxFeedback {...txFeedbackProps(app.tx, tx.state)} onRetry={cancel} onDismiss={tx.reset} />
       </div>
     </section>
   )
@@ -409,7 +414,7 @@ function ActivityLog({ demo }: { demo: DemoState }) {
   return (
     <Card title={a.title} id="activity-title">
       {demo.activity.length === 0 ? (
-        <Empty icon={InboxIcon} text={a.empty} />
+        <NothingYet icon={InboxIcon} text={a.empty} />
       ) : (
         <>
           <ol className="flex flex-col divide-y">
