@@ -11,7 +11,7 @@ It is the **lender's view** of the Monark DeFi demos (alongside Fluidswap, Borro
 
 ## Run it locally
 
-Requirements: Node 22 and pnpm 10.
+Requirements: Node 22.23.4 or newer on the 22 line and pnpm 10.
 
 ```sh
 pnpm install
@@ -89,3 +89,4 @@ cream and espresso tokens from the brand guidelines.
 
 Import the repository in Vercel and keep the defaults (framework: Next.js, install `pnpm install`, build `pnpm build`).
 No `vercel.json` and no environment variables are required. Node 22 is pinned in `package.json` `engines`.
+Vercel picks the 22.x patch release, so `pnpm build` and `pnpm start` stop on a Node release exposed to CVE-2026-111497 (22.23.4 is the first patched one).
